@@ -1,0 +1,247 @@
+#+TITLE: Garden Tracker
+#+AUTHOR: Brandon  Brodrick
+
+* API
+** serialize
+*** /api/user/:
+NOTE:
+this uses a url param EX: ?user_id=1
+This NEEDS jwt auth for using 
+#+BEGIN_SRC javascript
+{
+  "user_id": 1,
+  "name": "Brandon",
+  "username": "Brandon",
+  "gardens": [
+  {
+  "garden_id": 1,
+  "name": "Backyard Window Garden",
+  "description": "This is my 2x4 size garden wher ei have buckwheat",
+  "layout": "[[0,0,0,0][0,0,0,0]]",
+  "metadata": "{"0": {"name": "weather", "datatype": "int"}, "1": {"name": "watered", "datatype": "bool"}}"
+  }
+  ],
+  "user_plants": [
+  {
+  "userplant_id": 1,
+  "plant_id": 1,
+  "variety_id": 1,
+  "garden_id": 1,
+  "name": "My buckwheat",
+  "description": "this is by the house being used to fight weeds",
+  "metadata": "{"0": {"name": "weather", "datatype": "int"}, "1": {"name": "watered", "datatype": "bool"}}"
+   },
+   {
+   "userplant_id": 2,
+   "plant_id": 1,
+   "variety_id": 1,
+   "garden_id": 1,
+   "name": "My buckwheat 2",
+   "description": "this is by the house being used to fight weeds",
+   "metadata": "{"0": {"name": "weather", "datatype": "int"}, "1": {"name": "watered", "datatype": "bool"}}"
+   }
+  ],
+  
+}
+#+END_SRC 
+*** /api/plants/:
+#+BEGIN_SRC javascript
+  {
+      "plants":[
+	  {
+	      "plant_id": 1,
+	      "name": "Green Beans",
+	      "description": "immature beans, in bush and pole variety.", 
+	      "info_url": "www.google.com" 
+	  },
+	  {
+	      "plant_id": 2,
+	      "name": "Buckwheat",
+	      "description": "A sudo-ceral grain also grown as a cover crop.", 
+	      "info_url": "www.google.com" 
+	  }
+      ]
+  }
+#+END_SRC 
+*** /api/varietys/:
+NOTE:
+This uses a url param EX: ?plant_id=1
+no Jwt auth required
+#+BEGIN_SRC javascript
+  {
+      "plant_id": 1
+      "varietys": [
+	  {
+	      "name": "Rattle Snake Beans",
+	      "description": "old hairloom Pole variety, can be eaten as green bean or dry bean. very prolific.", 
+	      "info_url": "www.google.com" 
+	  },
+	  {
+	      "name": "Blue Lake Pole Beans",
+	      "description": "A tender and delicious variety that is excellent due to its versatility in the kitchen! Blue Lake Pole vines can grow up to 12 feet long.", 
+	      "info_url": "www.google.com" 
+	  }
+      ]
+  }
+#+END_SRC 
+** Create Calls
+*** /api/harvest/:
+#+BEGIN_SRC javascript
+{
+    "user_id": 1,
+    "date": "09/03/2022",
+    "harvested": [
+	{
+	    "userplant_id": 1,
+	    "plant_id": 1,
+	    "quantity": null,
+	    "pound": 1,
+	    "ounce": 2,
+	    "notes": "lots of beans today!",
+	    "metadata": null
+	},
+	{
+	    "userplant_id": 2,
+	    "plant_id": 2,
+	    "quantity": 3,
+	    "pound": 2,
+	    "ounce": 12,
+	    "notes": "zucinni is getting signs of powder mildew. I should treat soon",
+	    "metadata": "{'weather': 102}"
+	}
+    ]
+}
+#+END_SRC 
+
+*** /api/plant/new:
+#+BEGIN_SRC javascript
+  {
+    "name": "Green Beans",
+    "description": "immature beans, in bush and pole variety.", 
+    "info_url": "www.google.com" 
+  }
+#+END_SRC 
+*** /api/variety/new:
+#+BEGIN_SRC javascript
+  {
+    "plant_id": 1,
+    "name": "Rattle Snake Beans",
+    "description": "old hairloom Pole variety, can be eaten as green bean or dry bean. very prolific.", 
+    "info_url": "www.google.com" 
+  }
+#+END_SRC 
+*** /api/garden/new:
+#+BEGIN_SRC javascript
+{
+ "user_id": 1,
+ "date": "09/07/2022",
+ "name": "Backyard Window Garden",
+ "description": "This is my 2x4 size garden wher ei have buckwheat",
+ "layout": "[[0,0,0,0][0,0,0,0]]", // fix this?
+ "metadata": "{'0': {'name': 'weather', 'datatype': 'int'}, '1': {'name': 'watered', 'datatype': 'bool'}}" // list of json objects that will be rendered
+// in front end but saved as json blobs
+}
+#+END_SRC 
+
+*** /api/userplant/new:
+#+BEGIN_SRC javascript
+{
+ "user_id": 1,
+ "plant_id": 2,
+ "variety_id": 2,
+ "garden_id": 1,
+ "date": "09/07/2022",
+ "name": "My buckwheat",
+ "description": "this is by the house being used to fight weeds",
+ "metadata": "{'0': {'name': 'weather', 'datatype': 'int'}, '1': {'name': 'watered', 'datatype': 'bool'}}" // list of json objects that will be rendered
+// in front end but saved as json blobs
+}
+#+END_SRC 
+
+** Update Calls
+*** /api/variety/update:
+#+BEGIN_SRC javascript
+  {
+    "variety_id": 1,
+    "plant_id": 1,
+    "name": "Rattle Snake Beans",
+    "description": "old hairloom Pole variety, can be eaten as green bean or dry bean. very prolific.", 
+    "info_url": "www.google.com" 
+  }
+#+END_SRC 
+*** /api/garden/update:
+#+BEGIN_SRC javascript
+{
+ "garden_id": 1,
+ "date": "09/07/2022",
+ "name": "Backyard Window Garden",
+ "description": "This is my 2x4 size garden wher ei have buckwheat",
+ "layout": "[[0,0,0,0][0,0,0,0]]", // fix this?
+ "metadata": "{"0": {"name": "weather", "datatype": "int"}, "1": {"name": "watered", "datatype": "bool"}}" // list of json objects that will be rendered
+// in front end but saved as json blobs
+}
+#+END_SRC 
+
+*** /api/userplant/update:
+#+BEGIN_SRC javascript
+{
+ "userplant_id": 1,
+ "user_id": 1,
+ "plant_id": 1,
+ "variety_id": 1,
+ "garden_id": 1,
+ "date": "09/07/2022",
+ "name": "My buckwheat",
+ "description": "this is by the house being used to fight weeds",
+ "metadata": "{"0": {"name": "weather", "datatype": "int"}, "1": {"name": "watered", "datatype": "bool"}}" // list of json objects that will be rendered
+// in front end but saved as json blobs
+}
+#+END_SRC 
+
+*** /api/plant/update:
+#+BEGIN_SRC javascript
+  {
+    "plant_id": 1,
+    "name": "Green Beans",
+    "description": "immature beans, in bush and pole variety.", 
+    "info_url": "www.google.com" 
+  }
+#+END_SRC 
+** /logout/
+#+BEGIN_SRC json
+#+END_SRC 
+
+** /login/
+#+BEGIN_SRC json
+#+END_SRC 
+
+
+
+* migrations
+HOW TO MIGRATE:
+- open ./migrations.py
+- in "unrun_migrations" add new migration with "{{MIGRATION_NUMBER}} : {{MIGRATION_COMMAND}},"
+- in main.py run AppDataBase migrate function
+
+* frontend
+ I would like this to be decoupled from the backend.. I may build it with templates for now? templates are alittle quicker and make dev envs less work.
+
+ I plan to make this a vue front end with abilities to make/adjust garden layouts. show and create graphs live and ext.
+
+* TODO plans
+I am adding migrations (10, 11) for new tables for keeping past updates from user plants and user gardens. this is maybe a bad idea? I think it may be useful
+so i am going to add it now
+
+I eventually want to transition this to a go backend but I just want to get this up and running quickly so I went with flask. 
+
+- OK I think all  the calls work, now I need to create a front end for displaying the data and interacting with it.
+- need to add jwt,
+- fix sql injection 
+- need to add support for new fields
+  - user_token
+  - user_plant metadata
+  - user_garden metadata
+  - user_plant foot_size
+  - plant foot_size
+  - variety foot_size
+     
