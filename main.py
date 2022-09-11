@@ -62,7 +62,7 @@ def load_user(user_id):
     return User(user[0],user[1],user[2],user[3],user[4],user[5])
 
 
-@app.route('/logout/', methods=['GET', 'POST'])
+@app.route('/api/logout/', methods=['GET', 'POST'])
 @login_required
 def logout():
     logout_user()
@@ -75,29 +75,34 @@ def logout():
 #     return render_template("create.html",create_form=create_form)
 
 
-@app.route('/login/', methods=['GET', 'POST'])
+@app.route('/api/login/', methods=['GET', 'POST'])
 def login_page():
-    login_form = LoginForm(request.form)
+    # TODO add jwt
+    username = request.args.get("username", None)
+    password = request.args.get("password", None)
+    print(username, password)
+    if username is None or password is None:
+        return jsonify({"status": 500})
     if request.method == "POST":
         #TODO add pass encryption probably
-        query = adb.cur.execute(f"SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE username='{login_form.username.data}' AND password='{login_form.password.data}'").fetchone()
+        query = adb.cur.execute(f"SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE username='{username}' AND password='{password}'").fetchone()
+        print(query)
         if query is not None:
             instance = User(query[0],query[1],query[2],query[3],query[4],query[5])
         if instance is not None:
+            print(instance)
             login_user(instance)
-            return redirect("/home/")
+            return jsonify({"status": 200})
+            # return redirect("/home/")
         else:
-            return render_template("login.html",login_form=login_form)
+            return jsonify({"status": 500})
+            # return render_template("login.html",login_form=login_form)
     else:
-        return render_template("login.html",login_form=login_form)
+        return jsonify({"status": 500})
+        # return render_template("login.html",login_form=login_form)
 
 
-@app.route("/home/")
-@login_required
-def home():
-    return render_template("home.html")
-
-    
+   
 ##########################################################################
 #################     NEW CALLS     ######################################
 ##########################################################################
