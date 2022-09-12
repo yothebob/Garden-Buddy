@@ -1,3 +1,4 @@
+
 #+TITLE: Garden Tracker
 #+AUTHOR: Brandon  Brodrick
 
@@ -215,8 +216,14 @@ no Jwt auth required
 #+BEGIN_SRC json
 #+END_SRC 
 
-
-
+* dev envs
+I was going to try lxd but it sucks... I mayy try docker. but i will start with vagrant.
+** Vagrant
+- vagrant up
+- vagrant ssh
+  .. wow that was alot harder then lxd *sigh* \( ¬▂¬) 
+** nginx
+** ansible? 
 * migrations
 HOW TO MIGRATE:
 - open ./migrations.py
