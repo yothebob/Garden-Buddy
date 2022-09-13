@@ -12,9 +12,9 @@ Garden Buddy
     <q-page-container>
       <router-view />
       <div>
-	  <input v-model="_username" name="username" type="text" />
-	  <input v-model="_password" name="password" type="text" />
-	  <button @click="printme">SUBMIT</button>
+	  <input v-model="_username" name="username" type="text" /><br/>
+	  <input v-model="_password" name="password" type="text" /><br/>
+	  <button @click="printme">SUBMIT</button><br/>
       </div>
     </q-page-container>
   </q-layout>
@@ -37,7 +37,7 @@ Garden Buddy
      methods: {
 	 printme: function () {
 	     /* TODO add jwt */
-	     axios.post(`:5000/login/?username=${this._username}&password=${this._password}`, {}).then((response) => {
+	     axios.post(`/api/login/?username=${this._username}&password=${this._password}`, {}).then((response) => {
 		 if (response.status === 200) {
 		     window.location.href = '/home/'
 		 }

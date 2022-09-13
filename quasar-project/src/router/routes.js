@@ -14,6 +14,20 @@ const routes = [
       { path: '', component: () => import('pages/IndexPage.vue') }
     ]
   },
+  {
+    path: '/home/',
+    component: () => import('layouts/HomeLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') }
+    ]
+  },
+  {
+    path: '/harvests/',
+    component: () => import('layouts/HarvestLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') }
+    ]
+  },
 
   // Always leave this as last one,
   // but you can also remove it

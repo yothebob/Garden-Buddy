@@ -33,6 +33,7 @@ class User():
 
 def create_jwt(user_id, username, password="", token=""):
     # to_b64_encode = [user_id, username, password, token]
+    # TODO make a real jwt
     to_b64_encode = [user_id, username]
     res = []
     [res.append(base64.b64encode(bytes(str(item),"UTF-8"))) for item in to_b64_encode]
@@ -47,13 +48,8 @@ app.config['SECRET_KEY'] = "secret key"
 login_manager = LoginManager(app)
 login_manager.init_app(app)
 
-adb = AppDataBase("garden-tracker.db")
+adb = AppDataBase("/var/www/garden-tracker/garden-tracker.db")
 # adb.migrate()
-
-
-@app.route("/")
-def index():
-    return render_template("index.html")
 
 
 @login_manager.user_loader
@@ -92,7 +88,7 @@ def login_page():
         if instance is not None:
             print(instance)
             login_user(instance)
-            return jsonify({"status": 200})
+            return jsonify({"status": 200, "auth": f""})
             # return redirect("/home/")
         else:
             return jsonify({"status": 500})
@@ -113,13 +109,14 @@ def api_harvest():
     # TODO add jwt auth
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
-    try:
+    # try:
+    if True:
         for item in decoded_json["harvested"]:
             # TODO fix sql injectsion
-            adb.cur.execute(f"INSERT into harvests (user_id, plant_id, date, quantity, pound, ounce, notes) VALUES ({decoded_json['user_id']},{item['plant_id']},'{decoded_json['date']}',{item['pound']},{item['quantity'] if item['quantity'] is not None else 'null' },{item['ounce']},'{item['notes']}')")
+            adb.cur.execute(f"INSERT into harvests (user_id, plant_id, userplant_id, garden_id, harvested_at, quantity, pound, ounce, notes) VALUES ({decoded_json['user_id']},{item['plant_id']},{item['userplant_id']},{item['garden_id']},'{decoded_json['date']}',{item['pound']},{item['quantity'] if item['quantity'] is not None else 'null' },{item['ounce']},'{item['notes']}')")
         adb.con.commit()
-    except:
-        return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
+    # except:
+    #     return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
     return jsonify({"status": 200, "message": "Saved Harvest Successfully!"})
 
 
@@ -239,10 +236,17 @@ def api_update_user_plant():
 @app.route("/api/user/", methods=["GET"])
 def api_user_serializer():
     #TODO add jwt auth
+    # fornow using current_user, will use that with frontend jwt
     serialized = {}
+    print(current_user.is_anonymous)
+    print(current_user.is_authenticated)
+    print(current_user.id)
     user_id = request.args.get("user_id", None)
+    print(user_id)
     if user_id is None:
         return jsonify({"status": 500, "message": "No user supplied"})
+    if current_user.is_anonymous == True or int(current_user.id) != int(user_id):
+        return jsonify({"status": 500, "message": "Not Authorized"})
     else:
         user_fields = adb.cur.execute(f"select name,username from users where rowid={user_id}").fetchone()
         garden_fields = adb.cur.execute(f"select rowid ,name, description, layout, metadata from user_gardens where user_id={user_id}").fetchall()
@@ -258,6 +262,21 @@ def api_user_serializer():
         serialized["user_plants"] = [{userplant_titles[i] : item[i] for i in range(len(userplant_titles))} for item in userplant_fields]
     return jsonify(serialized)
 
+
+@app.route("/api/userharvests/", methods=["GET"])
+def api_harvest_serializer():
+    #TODO add jwt
+    user_id = request.args.get("user_id", None)
+    if user_id is None:
+        return jsonify({"status": 500, "message": "No user supplied"})
+    if current_user.is_anonymous == True or int(current_user.id) != int(user_id):
+        return jsonify({"status": 500, "message": "Not Authorized"})
+    serialized = {}
+    harvests_titles = ["harvested_at", "plant_id", "userplant_id", "garden_id", "quantity", "pound", "ounce", "notes"]
+    #TODO add metadata field
+    query_harvests = adb.cur.execute(f"SELECT harvested_at, plant_id, userplant_id, garden_id, quantity, pound, ounce, notes from harvests where user_id={user_id}").fetchall()
+    serialized["harvests"] = [{harvests_titles[i] : harvests[i] for i in range(len(harvests_titles))} for harvests in query_harvests]
+    return jsonify(serialized)
 
 @app.route("/api/plants/", methods=["GET"])
 def api_plant_serializer():
@@ -282,5 +301,5 @@ def api_variety_serializer():
         return jsonify(serialized)
 
     
-if __name__ == "__main__":
-    app.run()
+# if __name__ == "__main__":
+#     app.run()

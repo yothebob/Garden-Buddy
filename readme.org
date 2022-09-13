@@ -100,15 +100,6 @@ no Jwt auth required
 	    "ounce": 2,
 	    "notes": "lots of beans today!",
 	    "metadata": null
-	},
-	{
-	    "userplant_id": 2,
-	    "plant_id": 2,
-	    "quantity": 3,
-	    "pound": 2,
-	    "ounce": 12,
-	    "notes": "zucinni is getting signs of powder mildew. I should treat soon",
-	    "metadata": "{'weather': 102}"
 	}
     ]
 }
@@ -219,10 +210,23 @@ no Jwt auth required
 * dev envs
 I was going to try lxd but it sucks... I mayy try docker. but i will start with vagrant.
 ** Vagrant
-- vagrant up
-- vagrant ssh
+*** install
+**** arch
+#+BEGIN_SRC bash
+  sudo pacman -S vagrant
+#+END_SRC
+**** ubuntu
+#+BEGIN_SRC bash
+  sudo apt-get install vagrant
+#+END_SRC
+
+*** development deploy
+inside project main directory...
+  - vagrant up
+  - vagrant ssh
   .. wow that was alot harder then lxd *sigh* \( ¬▂¬) 
 ** nginx
+Nginx and uwsgi configs are in the ./deployment/ folder. Update according to your deployment needs
 ** ansible? 
 * migrations
 HOW TO MIGRATE:
@@ -231,6 +235,21 @@ HOW TO MIGRATE:
 - in main.py run AppDataBase migrate function
 
 * frontend
+** QUASAR
+*** the front end code is in ./quasar-project
+***  install quasar with
+#+BEGIN_SRC bash
+  npm -i -g @quasar/cli
+#+END_SRC 
+*** run quasar locally with (but use vagrant)
+#+BEGIN_SRC bash
+ quasar dev run
+#+END_SRC 
+*** build front end for nginx
+#+BEGIN_SRC bash
+  quasar build
+#+END_SRC 
+
  I would like this to be decoupled from the backend.. I may build it with templates for now? templates are alittle quicker and make dev envs less work.
 
  I plan to make this a vue front end with abilities to make/adjust garden layouts. show and create graphs live and ext.

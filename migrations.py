@@ -11,6 +11,8 @@ total_migrations = {
 "9": "ALTER TABLE user_plants add column foot_size CHAR(20)",
 "10": "CREATE TABLE user_plants_update (userplant_id INT, plant_id INT, variety_id INT, garden_id INT, created_at CHAR(150), name CHAR(150), description TEXT, metadata TEXT)",
 "11": "CREATE TABLE user_garden_update (created_at CHAR(150), name CHAR(150), description TEXT, layout TEXT, metadata TEXT)",
-"12": "ALTER TABLE users ADD COLUMN user_token CHAR(100)"}
+"12": "ALTER TABLE users ADD COLUMN user_token CHAR(100)",
+"13": "ALTER TABLE harvests ADD COLUMN userplant_id INT",
+"14": "ALTER TABLE harvests ADD COLUMN garden_id INT"}
 
 unrun_migrations = {}
