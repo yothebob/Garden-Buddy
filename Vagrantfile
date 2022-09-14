@@ -65,14 +65,13 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y nginx vim
+    apt-get install -y nginx vim uwsgi
     apt-get install -y uwsgi-plugin-python3
     apt-get install -y python3.8-venv
     python3 -m venv /var/www/garden-tracker/venv
     apt-get install -y python3-pip
     cd /var/www/garden-tracker;
     source venv/bin/activate;
-    pip install uwsgi;
     pip install -r requirements.txt;
     cp /var/www/garden-tracker/deployment/nginx.conf /etc/nginx/sites-enabled/default;
     cp /var/www/garden-tracker/deployment/uwsgi.ini /etc/uwsgi/apps-enabled/garden-tracker.ini;
