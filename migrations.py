@@ -13,6 +13,11 @@ total_migrations = {
 "11": "CREATE TABLE user_garden_update (created_at CHAR(150), name CHAR(150), description TEXT, layout TEXT, metadata TEXT)",
 "12": "ALTER TABLE users ADD COLUMN user_token CHAR(100)",
 "13": "ALTER TABLE harvests ADD COLUMN userplant_id INT",
-"14": "ALTER TABLE harvests ADD COLUMN garden_id INT"}
+"14": "ALTER TABLE harvests ADD COLUMN garden_id INT",
+"15": "INSERT INTO plants (name, description, info_url) VALUES ('Green Beans', 'immature beans, in bush and pole variety.', 'www.google.com')",
+"16": "INSERT INTO varietys (plant_id, name, description, info_url) VALUES (1, 'Rattle Snake Beans', 'old hairloom Pole variety, can be eaten as green bean or dry bean. very prolific.', 'www.google.com')",
+"17": "INSERT INTO user_gardens (user_id, created_at, updated_at, name, description, layout) VALUES (1,'9/14/2022','9/14/2022','backyard garden', '', '[[0,0,0,0],[0,0,0,0]]')",
+"18": "INSERT INTO user_plants (user_id, plant_id, variety_id, garden_id, created_at, updated_at, name, description) VALUES (1,1,1,1,'9/14/2022','9/14/2022','My Beans','In the back of garden')",
+"19": "INSERT INTO harvests (user_id, plant_id, userplant_id, garden_id, harvested_at, quantity, pound, ounce, notes) VALUES (1,1,1,1,'9/14/2022',1,1,5,'lots of beans')"}
 
 unrun_migrations = {}
