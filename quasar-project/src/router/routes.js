@@ -21,9 +21,54 @@ const routes = [
       { path: '', component: () => import('pages/IndexPage.vue') }
     ]
   },
+
   {
-    path: '/harvests/',
+    path: '/garden/new/',
+    component: () => import('layouts/NewGardenLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') }
+    ]
+  },
+
+  {
+    path: '/harvest/new/',
     component: () => import('layouts/HarvestLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') }
+    ]
+  },
+  {
+    path: '/plant/new/',
+    component: () => import('layouts/NewPlantLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') }
+    ]
+  },
+  {
+    path: '/variety/new/',
+    component: () => import('layouts/NewVarietyLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') }
+    ]
+  },
+  {
+    path: '/userplant/new/',
+    component: () => import('layouts/NewUserPlantLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') }
+    ]
+  },
+// UPDATES
+  {
+    path: '/garden/new/',
+    component: () => import('layouts/UpdateGardenLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') }
+    ]
+  },
+  {
+    path: '/userplant/new/',
+    component: () => import('layouts/UpdateUserPlantLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') }
     ]

@@ -255,6 +255,8 @@ HOW TO MIGRATE:
  I plan to make this a vue front end with abilities to make/adjust garden layouts. show and create graphs live and ext.
 
 * TODO plans
+yeah.. I am not really liking sqlite for this... I think I will transfer it over to another database style... 
+
 I am adding migrations (10, 11) for new tables for keeping past updates from user plants and user gardens. this is maybe a bad idea? I think it may be useful
 so i am going to add it now
 

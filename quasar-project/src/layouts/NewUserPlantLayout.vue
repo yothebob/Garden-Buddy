@@ -76,7 +76,7 @@ const linksList = [
 ]
 
 export default defineComponent({
-  name: 'HarvestLayout',
+  name: 'NewUserLayout',
 
   components: {
     EssentialLink
