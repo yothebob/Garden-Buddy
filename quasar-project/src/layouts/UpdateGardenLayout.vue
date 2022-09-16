@@ -1,4 +1,4 @@
-<template>
+\<template>
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
 	<q-toolbar>
@@ -76,7 +76,7 @@ const linksList = [
 ]
 
 export default defineComponent({
-  name: 'HomeLayout',
+  name: 'UpdateGardenLayout',
 
   components: {
     EssentialLink

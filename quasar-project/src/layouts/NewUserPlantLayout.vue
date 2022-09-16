@@ -76,7 +76,7 @@ const linksList = [
 ]
 
 export default defineComponent({
-  name: 'HomeLayout',
+  name: 'NewUserLayout',
 
   components: {
     EssentialLink

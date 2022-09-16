@@ -47,8 +47,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import EssentialLink from 'components/EssentialLink.vue'
- import axios from 'axios'
- 
+
 const linksList = [
   {
       title: 'Home',
@@ -92,17 +91,7 @@ export default defineComponent({
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       }
-    },
-   data: () => {
-       return {
-	   "harvests" : null
-       };
-   },
-   methods: {
-       getHarvests: function () {
-	   axios.post
-       }
-   }
+    }
   }
- })
+})
 </script>
