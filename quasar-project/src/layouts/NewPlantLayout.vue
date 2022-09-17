@@ -39,59 +39,83 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+	<div>
+	    <label for=""></label>
+	    <input name="" type="text" value=""/>
+	    <label for=""></label>
+	    <input name="" type="text" value=""/>
+	    <label for=""></label>
+	    <input name="" type="text" value=""/>
+	    <button @click="sendNewPlant"></button>
+	</div>
+	<!-- <div></div> if successful save -->
+	<!-- <div></div> not successful save -->
+	
+	<router-view />
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+ import { defineComponent, ref } from 'vue'
+ import EssentialLink from 'components/EssentialLink.vue'
+ import axios from 'axios'
+ 
+ const linksList = [
+     {
+	 title: 'Home',
+	 caption: 'My Home Page',
+	 icon: 'school',
+	 link: '/home/'
+     },
+     {
+	 title: 'Gardens',
+	 caption: 'View, create and update my gardens',
+	 icon: 'school',
+	 link: '/gardens/'
+     },
+     {
+	 title: 'My Plants',
+	 caption: 'Track any data you want with custom plants!',
+	 icon: 'code',
+	 link: '/userplants/'
+     },
+     {
+	 title: 'Harvests',
+	 caption: 'Add a new harvest for the day',
+	 icon: 'chat',
+	 link: '/harvests/'
+     },
+ ]
 
-const linksList = [
-  {
-      title: 'Home',
-      caption: 'My Home Page',
-      icon: 'school',
-      link: '/home/'
-  },
-  {
-      title: 'Gardens',
-      caption: 'View, create and update my gardens',
-      icon: 'school',
-      link: '/gardens/'
-  },
-  {
-      title: 'My Plants',
-      caption: 'Track any data you want with custom plants!',
-      icon: 'code',
-      link: '/userplants/'
-  },
-  {
-      title: 'Harvests',
-      caption: 'Add a new harvest for the day',
-      icon: 'chat',
-      link: '/harvests/'
-  },
-]
+ export default defineComponent({
+     name: 'NewPlantLayout',
 
-export default defineComponent({
-  name: 'NewPlantLayout',
+     components: {
+	 EssentialLink
+     },
 
-  components: {
-    EssentialLink
-  },
+     setup () {
+	 const leftDrawerOpen = ref(false)
 
-  setup () {
-    const leftDrawerOpen = ref(false)
-
-    return {
-      essentialLinks: linksList,
-      leftDrawerOpen,
-      toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-      }
-    }
-  }
-})
+	 return {
+	     essentialLinks: linksList,
+	     leftDrawerOpen,
+	     toggleLeftDrawer () {
+		 leftDrawerOpen.value = !leftDrawerOpen.value
+	     }
+	 }
+     },
+     created() {
+     },
+     methods: {
+	 sendNewPlant: function () {
+	     axios.post(`/api/plant/new/`, {}).then((response) => {
+		 if (response.status === 200) {
+		     window.location.href = '/home/'
+		 }
+	     })
+	 },
+     }
+ })
 </script>
