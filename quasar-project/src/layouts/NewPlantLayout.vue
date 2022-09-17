@@ -39,14 +39,18 @@
     </q-drawer>
 
     <q-page-container>
-	<div>
-	    <label for=""></label>
-	    <input name="" type="text" value=""/>
-	    <label for=""></label>
-	    <input name="" type="text" value=""/>
-	    <label for=""></label>
-	    <input name="" type="text" value=""/>
-	    <button @click="sendNewPlant"></button>
+	<div style="position:relative;padding-left:45%;">
+	    <h3> Add New Plant</h3><br/>
+	    <label for="plantName">Plant Name</label><br/>
+	    <input name="plantName" type="text" value="" v-model="_plantName" /><br/>
+	    <label for="plantDescription">Plant Description</label><br/>
+	    <textarea cols="30" id="" name="plantDescription" rows="10" v-model="_plantDescription"></textarea><br/>
+	    <label for="plantInfoUrl">Plant Info Url</label><br/>
+	    <input name="plantInfoUrl" type="text" value=""/><br/>
+	    <button @click="sendNewPlant"> Add Plant</button>
+	</div>
+	<div v-if="_message != null">
+	    <h5>{{_message}}</h5>
 	</div>
 	<!-- <div></div> if successful save -->
 	<!-- <div></div> not successful save -->
@@ -95,6 +99,15 @@
 	 EssentialLink
      },
 
+     data: () => {
+	 return {
+	     _message: null,
+	     _plantName: null,
+	     _plantDescription: null,
+	     _plantInfoUrl: null
+	 };
+     },
+
      setup () {
 	 const leftDrawerOpen = ref(false)
 
@@ -110,9 +123,20 @@
      },
      methods: {
 	 sendNewPlant: function () {
-	     axios.post(`/api/plant/new/`, {}).then((response) => {
+	     let _newPlantdata = {
+		 "name": this._plantName,
+		 "description": this._plantDescription, 
+		 "info_url": this._plantInfoUrl 
+	     };
+	     
+	     axios.post(`/api/plant/new`, _newPlantdata).then((response) => {
 		 if (response.status === 200) {
+		     this._message = "Save Successful"
+		     // should I just have this on a generic plant page? 
 		     window.location.href = '/home/'
+		 } else {
+		     /* this._message = "Uh Oh Something went wrong!" */
+		     this._message = "Uh Oh Something went wrong!"
 		 }
 	     })
 	 },

@@ -10,12 +10,15 @@ Garden Buddy
     </q-header>
 
     <q-page-container>
-      <router-view />
-      <div>
-	  <input v-model="_username" name="username" type="text" /><br/>
-	  <input v-model="_password" name="password" type="text" /><br/>
-	  <button @click="printme">SUBMIT</button><br/>
-      </div>
+	<div style="position:relative;padding-left:45%;">
+	    <h3>Login</h3><br/>
+	    <label for="">Username</label><br/>
+	    <input v-model="_username" name="username" type="text" /><br/>
+	    <label for="">Password</label><br/>
+	    <input v-model="_password" name="password" type="text" /><br/>
+	    <button @click="printme">SUBMIT</button><br/>
+	</div>
+	<router-view />
     </q-page-container>
   </q-layout>
 </template>

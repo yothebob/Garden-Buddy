@@ -76,6 +76,7 @@ Vagrant.configure("2") do |config|
     cp /var/www/garden-tracker/deployment/nginx.conf /etc/nginx/sites-enabled/default;
     cp /var/www/garden-tracker/deployment/uwsgi.ini /etc/uwsgi/apps-enabled/garden-tracker.ini;
     mkdir /var/log/garden;
-    
+    service uwsgi restart;
+    service nginx restart;
   SHELL
 end
