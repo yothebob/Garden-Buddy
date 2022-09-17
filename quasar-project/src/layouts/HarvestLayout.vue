@@ -39,15 +39,47 @@
     </q-drawer>
 
     <q-page-container>
-	<router-view />
-	
 	<div v-for="item in _harvestedPlants">
-	    <div>
-		<input name="userplant" type="text" value=""/>
-		<input name="plant" type="text" value=""/>
-		<input name="quantity" type="text" value=""/>
-		<input name="pound" type="text" value=""/>
-		<input name="ounce" type="text" value=""/>
+	    <div style="display">
+		<div>
+		    <h3>What Kind of plant?</h3>
+		    <label for="userplant">Tracked Plant</label>
+		    <input id="up-radio" name="userplant" type="radio" value=""/>
+		    <label for="plant">Generic Plant</label>
+		    <input id="p-radio" name="plant" type="radio" value=""/>
+		</div>
+		<br/>
+		<select id="userplant-select" name="userplant">
+		    <option v-for="up in _userPlants" value="{{up.id}}">{{up.name}}</option>
+		</select>
+
+		<select id="plant-select" name="plant">
+		    <option v-for="pl in _plants" value="{{pl.id}}">{{pl.name}}</option>
+		</select>
+
+		<input name="plant" type="text" value=""/> 
+
+		<div>
+		    <input name="quantity" type="text" value="{{item.quantity}}"/>
+		    <button>/\</button>
+		    <button>\/</button>
+		    <br/>
+		</div>
+
+		<div>
+		    <input name="pound" type="text" value="{{item.pound}}"/>
+		    <button>/\</button>
+		    <button>\/</button>
+		    <br/>
+		</div>
+		
+		<div>
+		    <input name="ounce" type="text" value="{{item.ounce}}"/>
+		    <button>/\</button>
+		    <button>\/</button>
+		    <br/>
+		</div>
+
 		<input name="notes" type="text" value=""/>
 		<input name="metadata" type="text" value=""/>
 	    </div>    
@@ -57,6 +89,9 @@
 		Track Another Plant
 	    </button>
 	</div>
+
+	<router-view />
+	
     </q-page-container>
   </q-layout>
 </template>
@@ -97,7 +132,12 @@
      name: 'HarvestLayout',
      data: () => {
 	 return {
-	     "_harvestedPlants": null,
+	     "_userData": null,
+	     "_harvestedPlants": [],
+	     "_plants": null,
+	     "_gardens": null,
+	     "_varietys": null,
+	     "_userPlants": null,
 	 };
      },
      components: {
@@ -114,20 +154,29 @@
 	     }
 	 }
      },
+     created() {
+	 this.AnotherHarvestedPlant();
+	 this.apiGetPlantData();
+	 console.log(this.apiGetUserData());
+	 console.log("harvestedplants", this._harvestedPlants)
+     },
      methods: {
 	 AnotherHarvestedPlant: function () {
 	     this._harvestedPlants.push({
-		 "userplant_id": null,
-		 "plant_id": null,
-		 "quantity": null,
-		 "pound": null,
-		 "ounce": null,
-		 "notes": null,
-		 "metadata": null
+		 "userplant_id": 0,
+		 "plant_id": 0,
+		 "quantity": 0,
+		 "pound": 0,
+		 "ounce": 0,
+		 "notes": "",
+		 "metadata": ""
 	     })
 	 },
 	 apiGetPlantData: function () {
 	     axios.get("/api/plants/").then((response) => {
+		 if (response.status == 200) {
+		     this._plants = response.data.plants
+		 }
 		 console.log(response);
 	     })
 	 },
@@ -138,10 +187,14 @@
 	 },
 	 apiGetUserData: function () {
 	     /* TODO add jwt */
-	     let user_id = 1;
 	     // I think I can make an api call that checks the backend for user_id and passes that up
-	     axios.get(`/api/user/user_id=${user_id}`).then((response) => {
+	     axios.get(`/api/user/`).then((response) => {
 		 console.log(response);
+		 if (response.status == 200) {
+		     this._userPlants = response.data.user_plants;
+		     this._gardens = response.data.gardens;
+		     this._userData = response.data;
+		 }
 	     })
 	 },
 	 printme: function () {

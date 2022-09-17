@@ -104,7 +104,7 @@ def login_page():
 #################     NEW CALLS     ######################################
 ##########################################################################
 
-
+@login_required
 @app.route("/api/harvest/", methods=["POST"])
 def api_harvest():
     # TODO add jwt auth
@@ -148,6 +148,7 @@ def api_new_variety():
     return jsonify({"status": 200, "message": "Saved Plant Successfully!"})
 
 
+@login_required
 @app.route("/api/garden/new", methods=["POST"])
 def api_new_garden():
     # TODO add jwt auth
@@ -163,6 +164,7 @@ def api_new_garden():
     return jsonify({"status": 200, "message": "Saved Garden Successfully!"})
 
 
+@login_required
 @app.route("/api/userplant/new", methods=["POST"])
 def api_new_user_plant():
     # TODO add jwt auth
@@ -209,6 +211,7 @@ def api_update_variety():
     return jsonify({"status": 200, "message": "Saved Plant Successfully!"})
 
 
+@login_required
 @app.route("/api/garden/update", methods=["POST"])
 #TODO add user jwt auth 
 def api_update_garden():
@@ -222,7 +225,7 @@ def api_update_garden():
         return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
     return jsonify({"status": 200, "message": "Saved Garden Successfully!"})
 
-
+@login_required
 @app.route("/api/userplant/update", methods=["POST"])
 def api_update_user_plant():
     # TODO add jwt auth
@@ -242,21 +245,19 @@ def api_update_user_plant():
 #################    SERIALIZERS   #######################################
 ##########################################################################
 
-
+@login_required
 @app.route("/api/user/", methods=["GET"])
 def api_user_serializer():
     #TODO add jwt auth
     # fornow using current_user, will use that with frontend jwt
+    if current_user.is_anonymous == True:
+        return jsonify({"status": 500, "message": "Not Authorized"})
+
     serialized = {}
-    print(current_user.is_anonymous)
-    print(current_user.is_authenticated)
-    print(current_user.id)
-    user_id = request.args.get("user_id", None)
-    print(user_id)
+    user_id = current_user.id
+
     if user_id is None:
         return jsonify({"status": 500, "message": "No user supplied"})
-    if current_user.is_anonymous == True or int(current_user.id) != int(user_id):
-        return jsonify({"status": 500, "message": "Not Authorized"})
     else:
         user_fields = adb.cur.execute(f"select name,username from users where rowid={user_id}").fetchone()
         garden_fields = adb.cur.execute(f"select rowid ,name, description, layout, metadata from user_gardens where user_id={user_id}").fetchall()
@@ -273,14 +274,17 @@ def api_user_serializer():
     return jsonify(serialized)
 
 
+@login_required
 @app.route("/api/userharvests/", methods=["GET"])
 def api_harvest_serializer():
     #TODO add jwt
-    user_id = request.args.get("user_id", None)
+    
+    if current_user.is_anonymous == True:
+        return jsonify({"status": 500, "message": "Not Authorized"})
+
+    user_id = current_user.id
     if user_id is None:
         return jsonify({"status": 500, "message": "No user supplied"})
-    if current_user.is_anonymous == True or int(current_user.id) != int(user_id):
-        return jsonify({"status": 500, "message": "Not Authorized"})
     serialized = {}
     harvests_titles = ["harvested_at", "plant_id", "userplant_id", "garden_id", "quantity", "pound", "ounce", "notes"]
     #TODO add metadata field

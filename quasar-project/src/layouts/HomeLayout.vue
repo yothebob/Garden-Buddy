@@ -59,19 +59,19 @@ const linksList = [
       title: 'Gardens',
       caption: 'View, create and update my gardens',
       icon: 'school',
-      link: '/gardens/'
+      link: '/garden/new/'
   },
   {
       title: 'My Plants',
       caption: 'Track any data you want with custom plants!',
       icon: 'code',
-      link: '/userplants/'
+      link: '/userplant/new/'
   },
   {
       title: 'Harvests',
       caption: 'Add a new harvest for the day',
       icon: 'chat',
-      link: '/harvests/'
+      link: '/harvest/new/'
   },
 ]
 
