@@ -85,6 +85,34 @@ no Jwt auth required
       ]
   }
 #+END_SRC 
+*** /api/userharvests/:
+need to be logged in (and eventually jwt)
+#+BEGIN_SRC javascript
+  {"harvests":[
+      {
+	  "garden_id":1,
+	  "harvested_at":"9/14/2022",
+	  "notes":"lots of beans",
+	  "ounce":5,
+	  "plant_id":1,
+	  "pound":1,
+	  "quantity":1,
+	  "userplant_id":1
+      },
+
+      {
+	  "garden_id":0,
+	  "harvested_at":"09/03/2022",
+	  "notes":"",
+	  "ounce":0,
+	  "plant_id":0,
+	  "pound":0,
+	  "quantity":0,
+	  "userplant_id":0
+      },
+  ]
+  }
+#+END_SRC
 ** Create Calls
 *** /api/harvest/:
 #+BEGIN_SRC javascript

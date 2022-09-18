@@ -6,15 +6,81 @@
 		<q-btn to="/variety/new/" label="Add a new Variety" outline color="green" /><br/>
 		<q-btn to="/api/logout/" label="Logout" outline color="yellow" /><br/>
 	    </div>
+	    <div>
+		<h3>Recently Harvested</h3>
+		<div v-for="harvest in _recentlyHarvested" class="q-pa-md" style="max-width: 350px">
+		    <h5>Harvested: {{harvest.plant_id}}</h5>
+		    <q-list dense bordered padding class="rounded-borders">
+			<q-item>
+			    <q-item-section>
+				Harvested at: {{harvest.harvested_at}}
+			    </q-item-section>
+			</q-item>
+			
+			<q-item>
+			    <q-item-section>
+				Harvest Weight: {{harvest.pound}} lbs {{harvest.ounce}} oz
+			    </q-item-section>
+			</q-item>
+			
+			<q-item>
+			    <q-item-section>
+				Harvest Quantity: {{harvest.quantity}}
+			    </q-item-section>
+			</q-item>
+
+			<q-item>
+			    <q-item-section>
+				Harvested In: {{harvest.garden_id}}
+			    </q-item-section>
+			</q-item>
+			
+			<q-item>
+			    <q-item-section>
+				Harvest Notes: {{harvest.notes}}
+			    </q-item-section>
+			</q-item>
+		    </q-list>
+		</div>
+		
+	    </div>
 	    <router-view />
 	</q-page-container>
     </q-layout>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+ import { defineComponent, ref } from 'vue'
+ import axios from 'axios'
+ 
+ export default defineComponent({
+     name: 'HomeLayout',
 
-export default defineComponent({
-  name: 'HomeLayout',
-})
+     data: () => {
+	 return {
+	     "_recentlyHarvested": null,
+	     "_harvestData": null,
+	 };
+     },
+
+     components: {
+     },
+     created() {
+	 this.apiGetharvestData();
+     },
+
+     methods: {
+	 apiGetharvestData: function () {
+	     axios.get("/api/userharvests/").then((response) => {
+		 console.log(response)
+		 if (response.status == 200) {
+		     this._harvestData = response.data.harvests
+		     this._recentlyHarvested = response.data.harvests.slice(0,3)
+		     console.log(this._harvestData)
+		 }
+	     })
+	 },
+     }
+
+ })
 </script>

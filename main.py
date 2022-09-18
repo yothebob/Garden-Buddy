@@ -274,6 +274,8 @@ def api_user_serializer():
     return jsonify(serialized)
 
 
+
+
 @login_required
 @app.route("/api/userharvests/", methods=["GET"])
 def api_harvest_serializer():
@@ -288,6 +290,7 @@ def api_harvest_serializer():
     serialized = {}
     harvests_titles = ["harvested_at", "plant_id", "userplant_id", "garden_id", "quantity", "pound", "ounce", "notes"]
     #TODO add metadata field
+    # TODO add joins to get plant_name, variety_name, garden_name and userplant_name
     query_harvests = adb.cur.execute(f"SELECT harvested_at, plant_id, userplant_id, garden_id, quantity, pound, ounce, notes from harvests where user_id={user_id}").fetchall()
 
     serialized["harvests"] = [{harvests_titles[i] : harvests[i] for i in range(len(harvests_titles))} for harvests in query_harvests]
