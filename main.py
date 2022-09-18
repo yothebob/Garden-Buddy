@@ -263,8 +263,8 @@ def api_user_serializer():
         garden_fields = adb.cur.execute(f"select rowid ,name, description, layout, metadata from user_gardens where user_id={user_id}").fetchall()
         userplant_fields = adb.cur.execute(f"select rowid, plant_id, variety_id, garden_id, name, description, metadata from user_plants where user_id={user_id}").fetchall()
 
-        garden_titles = ["garden_id" ,"name", "description", "layout", "metadata"]
-        userplant_titles = ["userplant_id", "plant_id", "variety_id", "garden_id", "name", "description", "metadata"]
+        garden_titles = ["value" ,"label", "description", "layout", "metadata"]
+        userplant_titles = ["value", "plant_id", "variety_id", "garden_id", "label", "description", "metadata"]
         
         serialized["user_id"] = user_id
         serialized["name"] = user_fields[0]

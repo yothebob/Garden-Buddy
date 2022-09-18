@@ -39,55 +39,59 @@
     </q-drawer>
 
     <q-page-container>
-	<div v-for="item in _harvestedPlants">
-	    <div style="display">
+	<q-item v-for="hp in totalHarvestedPlants" :key="hp">
+	    <div>
+		<h3>What Kind of plant?</h3>
 		<div>
-		    <h3>What Kind of plant?</h3>
-		    <label for="userplant">Tracked Plant</label>
-		    <input id="up-radio" name="userplant" type="radio" value=""/>
-		    <label for="plant">Generic Plant</label>
-		    <input id="p-radio" name="plant" type="radio" value=""/>
-		</div>
-		<br/>
-		<select id="userplant-select" name="userplant">
-		    <option v-for="up in _userPlants" value="{{up.id}}">{{up.name}}</option>
-		</select>
-
-		<select id="plant-select" name="plant">
-		    <option v-for="pl in _plants" value="{{pl.id}}">{{pl.name}}</option>
-		</select>
-
-		<input name="plant" type="text" value=""/> 
-
-		<div>
-		    <input name="quantity" type="text" value="{{item.quantity}}"/>
-		    <button>/\</button>
-		    <button>\/</button>
+		    <q-radio v-model.string="_harvestedPlants[hp].plantType" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="userplant" label="Tracked Plant" />
+		    <q-radio v-model.string="_harvestedPlants[hp].plantType" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="plant" label="Plant" />
 		    <br/>
 		</div>
-
-		<div>
-		    <input name="pound" type="text" value="{{item.pound}}"/>
-		    <button>/\</button>
-		    <button>\/</button>
+		<div v-if="_harvestedPlants[hp].plantType == 'plant'">
+		    <q-select rounded outlined v-model.number="_harvestedPlants[hp].plant_id" :options="_plants" emit-value label="Plant Name" />
+		<br/>
+		</div>
+		<div v-else >
+		    <q-select rounded outlined v-model.number="_harvestedPlants[hp].userplant_id" :options="_userPlants" emit-value label="Tracked Plant Name" />
 		    <br/>
 		</div>
 		
-		<div>
-		    <input name="ounce" type="text" value="{{item.ounce}}"/>
-		    <button>/\</button>
-		    <button>\/</button>
-		    <br/>
-		</div>
+		<q-select rounded outlined v-model.number="_harvestedPlants[hp].garden_id" :options="_gardens" emit-value label="Which Garden?" /><br/>
+		<q-input rounded outlined v-model.number="_harvestedPlants[hp].quantity" label="Quantity" /><br/>
+		<q-input rounded outlined v-model.number="_harvestedPlants[hp].pound" label="Pound" /><br/>
+		<q-input rounded outlined v-model.number="_harvestedPlants[hp].ounce" label="Ounce" /><br/>
+		<q-input
+		    v-model.string="_harvestedPlants[hp].notes"
+		    filled
+		    autogrow
+		    label="Notes"
+		/>
+		<br/>
 
-		<input name="notes" type="text" value=""/>
-		<input name="metadata" type="text" value=""/>
-	    </div>    
-	</div>
+		<q-btn @click="AnotherHarvestedPlant" color="white" text-color="black" label="Track Another Plant" /><br/>
+	    </div>
+	    <q-btn @click="submitHarvest" color="white" text-color="black" label="Submit Harvest" /><br/>
+
+	</q-item>
+
 	<div>
-	    <button @click="AnotherHarvestedPlant">
-		Track Another Plant
-	    </button>
+	    <div v-if="_alert == true">
+		<q-dialog v-model="_alert">
+		    <q-card>
+			<q-card-section>
+			    <div class="text-h6">Alert</div>
+			</q-card-section>
+			
+			<q-card-section class="q-pt-none">
+			    {{_message}}
+			</q-card-section>
+			
+			<q-card-actions align="right">
+			    <q-btn flat label="OK" color="primary" v-close-popup />
+			</q-card-actions>
+		    </q-card>
+		</q-dialog>
+	    </div>
 	</div>
 
 	<router-view />
@@ -132,8 +136,11 @@
      name: 'HarvestLayout',
      data: () => {
 	 return {
+	     "_alert": null,
+	     "_message": null,
 	     "_userData": null,
 	     "_harvestedPlants": [],
+	     "totalHarvestedPlants": null,
 	     "_plants": null,
 	     "_gardens": null,
 	     "_varietys": null,
@@ -155,15 +162,30 @@
 	 }
      },
      created() {
+	 this.totalHarvestedPlants = 0;
 	 this.AnotherHarvestedPlant();
+	 this._harvestedPlants.push({
+	     "plantType": "",
+	     "userplant_id": 0,
+	     "garden_id": 0,
+	     "plant_id": 0,
+	     "quantity": 0,
+	     "pound": 0,
+	     "ounce": 0,
+	     "notes": "",
+	     "metadata": ""
+	 })
+
 	 this.apiGetPlantData();
 	 console.log(this.apiGetUserData());
 	 console.log("harvestedplants", this._harvestedPlants)
      },
      methods: {
 	 AnotherHarvestedPlant: function () {
+	     this.totalHarvestedPlants = this.totalHarvestedPlants + 1;
 	     this._harvestedPlants.push({
 		 "userplant_id": 0,
+		 "garden_id": 0,
 		 "plant_id": 0,
 		 "quantity": 0,
 		 "pound": 0,
@@ -171,6 +193,24 @@
 		 "notes": "",
 		 "metadata": ""
 	     })
+	 },
+	 submitHarvest: function() {
+	     let sendData = {
+		 "user_id": this._userData.user_id,
+		 "date": "09/03/2022",
+		 "harvested": this._harvestedPlants
+	     }
+	     console.log("sendData",sendData)
+	     axios.post('/api/harvest/', sendData).then((response) => {
+		 if (response.status === 200) {
+		     console.log(response)
+		     this._alert = true
+		     this._message = "Save Successful"
+		 } else {
+		     this._alert = true
+		     this._message = "Uh Oh Something went wrong!"
+		 }
+	     }) // put error here.. if i remember
 	 },
 	 apiGetPlantData: function () {
 	     axios.get("/api/plants/").then((response) => {
@@ -197,14 +237,6 @@
 		 }
 	     })
 	 },
-	 printme: function () {
-	     /* TODO add jwt */
-	     axios.post(`/api/login/?username=${this._username}&password=${this._password}`, {}).then((response) => {
-		 if (response.status === 200) {
-		     window.location.href = '/home/'
-		 }
-	     })
-	 }
      }
  })
 </script>
