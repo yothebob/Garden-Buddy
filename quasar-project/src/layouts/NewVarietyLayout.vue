@@ -39,26 +39,46 @@
     </q-drawer>
 
     <q-page-container>
-	<div style="position:relative;padding-left:45%;">
+	<div>
 	    <h3>Add New Variety</h3>
 	    <br/>
-	    <label for="plantSelect">Plant Type</label><br/>
-	    <select id="plant-select" name="plantSelect" v-model="_plantId"><br/>
-		<option v-for="pl in _plants" value="{{pl.id}}">{{pl.name}}</option>
-	    </select>
+
+	    <q-select rounded outlined v-model="_plantId" :options="_plants" emit-value label="Plant Name" />
 	    <br/>
-	    <label for="varietyName">Variety Name</label><br/>
-	    <input name="varietyName" type="text" value="" v-model="_varietyName" />
+
+	    <q-input rounded outlined v-model="_varietyName" label="Variety Name" />
 	    <br/>
-	    <label for="">Variety Description</label><br/>
-	    <textarea cols="30" id="" name="" rows="10" v-model="_varietyDescription"></textarea>
+
+	    <q-input
+		v-model="_varietyDescription"
+		filled
+		autogrow
+		label="Description"
+	    />
 	    <br/>
-	    <label for="">Variety Info Url</label><br/>
-	    <input name="" type="text" value="" v-model="_varietyInfoUrl" />
+	    
+	    <q-input rounded outlined v-model="_varietyInfoUrl" label="Variety Info Url" />
 	    <br/>
-	    <button @click="sendNewVariety">Add Variety</button>
+	    <q-btn @click="sendNewVariety" color="white" text-color="black" label="Add Variety" />
 	</div>
-      <router-view />
+	<div v-if="_alert == true">
+	    <q-dialog v-model="_alert">
+		<q-card>
+		    <q-card-section>
+			<div class="text-h6">Alert</div>
+		    </q-card-section>
+		    
+		    <q-card-section class="q-pt-none">
+			{{_message}}
+		    </q-card-section>
+		    
+		    <q-card-actions align="right">
+			<q-btn flat label="OK" color="primary" v-close-popup />
+		    </q-card-actions>
+		</q-card>
+	    </q-dialog>
+	</div>
+	<router-view />
     </q-page-container>
   </q-layout>
 </template>
@@ -67,7 +87,7 @@
  import { defineComponent, ref } from 'vue'
  import EssentialLink from 'components/EssentialLink.vue'
  import axios from 'axios'
- 
+
  const linksList = [
      {
 	 title: 'Home',
@@ -104,6 +124,7 @@
 
      data: () => {
 	 return {
+	     _alert: false,
 	     _message: null,
 	     _plants: [],
 	     _plantId: null,
@@ -115,7 +136,7 @@
 
      setup () {
 	 const leftDrawerOpen = ref(false)
-
+	 
 	 return {
 	     essentialLinks: linksList,
 	     leftDrawerOpen,
@@ -128,8 +149,9 @@
      created() {
 	 this.apiGetPlantData();
      },
-
+     
      methods: {
+
 	 sendNewVariety: function () {
 	     let _newVarietyData = {
 		 "plant_id": this._plantId,
@@ -138,16 +160,22 @@
 		 "info_url": this._varietyInfoUrl 
 	     };
 	     
+	     console.log(_newVarietyData);
+
 	     axios.post(`/api/variety/new`, _newVarietyData).then((response) => {
 		 if (response.status === 200) {
-		     this._message = "Save Successful"
-		     // should I just have this on a generic Variety page? 
-		     window.location.href = '/home/'
+		     console.log(response)
+		     this._message = 'Save Successful.'
+		     this._alert = true;
 		 } else {
-		     /* this._message = "Uh Oh Something went wrong!" */
-		     this._message = "Uh Oh Something went wrong!"
+		     this._alert = true;
+		     this._message = 'Uh Oh Something went wrong!'
 		 }
-	     })
+	     }).catch(function (error) {
+		 console.log(error.toJSON());
+		 this._alert = true;
+		 this._message = 'Uh Oh Something went wrong!'
+	     });
 	 },
 
 	 apiGetPlantData: function () {
@@ -156,8 +184,10 @@
 		     this._plants = response.data.plants
 		 }
 		 console.log(response);
-	     })
-		 },
+	     }).catch(function (error) {
+		 console.log(error.toJSON());
+	     });
+	 },
 
      }
 

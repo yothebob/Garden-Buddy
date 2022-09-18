@@ -296,7 +296,7 @@ def api_harvest_serializer():
 @app.route("/api/plants/", methods=["GET"])
 def api_plant_serializer():
     serialized = {}
-    plant_titles = ["plant_id", "name", "description", "info_url"]
+    plant_titles = ["value", "label", "description", "info_url"]
     query_plants = adb.cur.execute("SELECT rowid, name, description, info_url from plants").fetchall()
 
     serialized["plants"] = [{plant_titles[i] : plant[i] for i in range(len(plant_titles))} for plant in query_plants]
@@ -311,7 +311,7 @@ def api_variety_serializer():
     else:
         serialized = {}
         serialized["plant_id"] = plant_id
-        variety_titles = ["variety_id", "name", "description", "info_url"]
+        variety_titles = ["value", "label", "description", "info_url"]
         query_varietys = adb.cur.execute(f"SELECT rowid, name, description, info_url from varietys WHERE plant_id={plant_id}").fetchall()
 
         serialized["varietys"] = [{variety_titles[i] : variety[i] for i in range(len(variety_titles))} for variety in query_varietys]

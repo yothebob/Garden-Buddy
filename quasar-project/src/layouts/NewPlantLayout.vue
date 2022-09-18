@@ -39,21 +39,45 @@
     </q-drawer>
 
     <q-page-container>
-	<div style="position:relative;padding-left:45%;">
-	    <h3> Add New Plant</h3><br/>
-	    <label for="plantName">Plant Name</label><br/>
-	    <input name="plantName" type="text" value="" v-model="_plantName" /><br/>
-	    <label for="plantDescription">Plant Description</label><br/>
-	    <textarea cols="30" id="" name="plantDescription" rows="10" v-model="_plantDescription"></textarea><br/>
-	    <label for="plantInfoUrl">Plant Info Url</label><br/>
-	    <input name="plantInfoUrl" type="text" value=""/><br/>
-	    <button @click="sendNewPlant"> Add Plant</button>
+	<div>
+	    <h3>Add New Plant</h3><br/>
+	    
+	    <q-input rounded outlined v-model="_plantName" label="Plant Name" />
+	    <br/>
+
+	    <q-input
+		v-model="_plantDescription"
+		filled
+		autogrow
+		label="Description"
+	    />
+	    <br/>
+	    
+	    <q-input rounded outlined v-model="_plantInfoUrl" label="Plant Info Url" />
+	    <br/>
+	    
+	    <q-btn @click="sendNewPlant" color="white" text-color="black" label="Add Plant" />
+
 	</div>
-	<div v-if="_message != null">
-	    <h5>{{_message}}</h5>
+	<div>
+	    <div v-if="_alert == true">
+		<q-dialog v-model="_alert">
+		    <q-card>
+			<q-card-section>
+			    <div class="text-h6">Alert</div>
+			</q-card-section>
+			
+			<q-card-section class="q-pt-none">
+			    {{_message}}
+			</q-card-section>
+			
+			<q-card-actions align="right">
+			    <q-btn flat label="OK" color="primary" v-close-popup />
+			</q-card-actions>
+		    </q-card>
+		</q-dialog>
+	    </div>
 	</div>
-	<!-- <div></div> if successful save -->
-	<!-- <div></div> not successful save -->
 	
 	<router-view />
     </q-page-container>
@@ -101,6 +125,7 @@
 
      data: () => {
 	 return {
+	     _alert: null,
 	     _message: null,
 	     _plantName: null,
 	     _plantDescription: null,
@@ -131,11 +156,13 @@
 	     
 	     axios.post(`/api/plant/new`, _newPlantdata).then((response) => {
 		 if (response.status === 200) {
+		     
+		     this._alert = true
 		     this._message = "Save Successful"
 		     // should I just have this on a generic plant page? 
-		     window.location.href = '/home/'
+		     /* window.location.href = '/home/' */
 		 } else {
-		     /* this._message = "Uh Oh Something went wrong!" */
+		     this._alert = true
 		     this._message = "Uh Oh Something went wrong!"
 		 }
 	     })
