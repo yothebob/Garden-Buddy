@@ -3,7 +3,7 @@
     clickable
     tag="a"
     target="_blank"
-    :href="link"
+    :to="link"
   >
     <q-item-section
       v-if="icon"

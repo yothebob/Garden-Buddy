@@ -1,14 +1,5 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-toolbar-title>
-Garden Buddy
-        </q-toolbar-title>
-
-      </q-toolbar>
-    </q-header>
-
     <q-page-container>
 	<div>
 	    <h3>Login</h3><br/>

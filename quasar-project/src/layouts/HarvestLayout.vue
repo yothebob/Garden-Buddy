@@ -1,43 +1,5 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-	<q-toolbar>
-            <q-btn
-		flat
-		dense
-		round
-		icon="menu"
-		aria-label="Menu"
-		@click="toggleLeftDrawer"
-            />
-
-            <q-toolbar-title>
-		Garden Buddy
-            </q-toolbar-title>
-
-	</q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-	    GardenBuddy
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
-
     <q-page-container>
 	<q-item v-for="hp in totalHarvestedPlants" :key="hp">
 	    <div>
@@ -102,7 +64,6 @@
 
 <script>
  import { defineComponent, ref } from 'vue'
- import EssentialLink from 'components/EssentialLink.vue'
  import axios from 'axios'
  
  const linksList = [
@@ -147,20 +108,6 @@
 	     "_userPlants": null,
 	 };
      },
-     components: {
-	 EssentialLink
-     },
-     setup () {
-	 const leftDrawerOpen = ref(false)
-	 
-	 return {
-	     essentialLinks: linksList,
-	     leftDrawerOpen,
-	     toggleLeftDrawer () {
-		 leftDrawerOpen.value = !leftDrawerOpen.value
-	     }
-	 }
-     },
      created() {
 	 this.totalHarvestedPlants = 0;
 	 this.AnotherHarvestedPlant();
@@ -195,6 +142,9 @@
 	     })
 	 },
 	 submitHarvest: function() {
+	     // for now the first index of the array seems to be blank? here is the fix, remove if doesnt nwork
+	     this._harvestedPlants.shift();
+	     
 	     let sendData = {
 		 "user_id": this._userData.user_id,
 		 "date": "09/03/2022",
