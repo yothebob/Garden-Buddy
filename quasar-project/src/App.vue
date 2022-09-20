@@ -64,6 +64,18 @@ const linksList = [
       link: '/garden/new/'
   },
   {
+      title: 'Plants',
+      caption: 'Read about new plants, Or add new plants!',
+      icon: 'code',
+      link: '/plant/new/'
+  },
+  {
+      title: 'Varieties',
+      caption: 'Check out new Varieties for your garden, Or add your own!',
+      icon: 'code',
+      link: '/variety/new/'
+  },
+  {
       title: 'My Plants',
       caption: 'Track any data you want with custom plants!',
       icon: 'code',

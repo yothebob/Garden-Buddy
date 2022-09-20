@@ -50,14 +50,14 @@ This NEEDS jwt auth for using
   {
       "plants":[
 	  {
-	      "plant_id": 1,
-	      "name": "Green Beans",
+	      "value": 1,
+	      "label": "Green Beans",
 	      "description": "immature beans, in bush and pole variety.", 
 	      "info_url": "www.google.com" 
 	  },
 	  {
-	      "plant_id": 2,
-	      "name": "Buckwheat",
+	      "value": 2,
+	      "label": "Buckwheat",
 	      "description": "A sudo-ceral grain also grown as a cover crop.", 
 	      "info_url": "www.google.com" 
 	  }
