@@ -288,10 +288,26 @@ def api_harvest_serializer():
     if user_id is None:
         return jsonify({"status": 500, "message": "No user supplied"})
     serialized = {}
-    harvests_titles = ["harvested_at", "plant_id", "userplant_id", "garden_id", "quantity", "pound", "ounce", "notes"]
+    harvests_titles = ["harvested_at", "plant_name", "userplant_name", "garden_name", "quantity", "pound", "ounce", "notes"]
     #TODO add metadata field
-    # TODO add joins to get plant_name, variety_name, garden_name and userplant_name
-    query_harvests = adb.cur.execute(f"SELECT harvested_at, plant_id, userplant_id, garden_id, quantity, pound, ounce, notes from harvests where user_id={user_id}").fetchall()
+    #TODO make rowid 1 for plant,userplant, and variety be a generic default (Not selected)
+
+    q_string = """
+    SELECT
+    h.harvested_at,
+    p.name,
+    up.name,
+    ug.name,
+    h.quantity,
+    h.pound,
+    h.ounce,
+    h.notes
+    from harvests as h
+    INNER JOIN plants as p ON h.plant_id = p.rowid
+    INNER JOIN user_plants as up ON h.userplant_id = up.rowid
+    INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
+    WHERE h.user_id = {}""".format(user_id)
+    query_harvests = adb.cur.execute(q_string).fetchall()
 
     serialized["harvests"] = [{harvests_titles[i] : harvests[i] for i in range(len(harvests_titles))} for harvests in query_harvests]
     return jsonify(serialized)

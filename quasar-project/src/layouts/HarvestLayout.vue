@@ -144,10 +144,11 @@
 	 submitHarvest: function() {
 	     // for now the first index of the array seems to be blank? here is the fix, remove if doesnt nwork
 	     this._harvestedPlants.shift();
-	     
+	     var date = new Date();
+	     let dateString = String(((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear())
 	     let sendData = {
 		 "user_id": this._userData.user_id,
-		 "date": "09/03/2022",
+		 "date": dateString,
 		 "harvested": this._harvestedPlants
 	     }
 	     console.log("sendData",sendData)

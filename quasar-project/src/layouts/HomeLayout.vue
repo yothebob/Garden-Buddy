@@ -9,7 +9,7 @@
 	    <div>
 		<h3>Recently Harvested</h3>
 		<div v-for="harvest in _recentlyHarvested" class="q-pa-md" style="max-width: 350px">
-		    <h5>Harvested: {{harvest.plant_id}}</h5>
+		    <h5>Harvested: {{harvest.plant_name}}</h5>
 		    <q-list dense bordered padding class="rounded-borders">
 			<q-item>
 			    <q-item-section>
@@ -31,7 +31,7 @@
 
 			<q-item>
 			    <q-item-section>
-				Harvested In: {{harvest.garden_id}}
+				Harvested In: {{harvest.garden_name}}
 			    </q-item-section>
 			</q-item>
 			
@@ -75,7 +75,7 @@
 		 console.log(response)
 		 if (response.status == 200) {
 		     this._harvestData = response.data.harvests
-		     this._recentlyHarvested = response.data.harvests.slice(0,3)
+		     this._recentlyHarvested = response.data.harvests
 		     console.log(this._harvestData)
 		 }
 	     })
