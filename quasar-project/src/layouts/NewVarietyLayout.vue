@@ -66,10 +66,23 @@
      },
 
      created() {
+	 this.apiCheckLogin();
 	 this.apiGetPlantData();
      },
      
      methods: {
+	 apiCheckLogin: function () {
+	     axios.get("/api/who-am-i/").then((response) => {
+		 console.log(response)
+		 if (response.status == 200 && response.data.status == 200) {
+		     this._logged_in = true;
+		     console.log(this._harvestData)
+		 } else {
+		     this._logged_in = false;
+		     window.location.href = "/login";
+		 }
+	     })
+	 },
 
 	 sendNewVariety: function () {
 	     let _newVarietyData = {

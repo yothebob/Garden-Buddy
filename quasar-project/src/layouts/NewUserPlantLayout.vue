@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+ <q-layout view="lHh Lpr lFf">
       <q-page-container>
 	  <div>
 	      <h3>Add New Plant</h3><br/>

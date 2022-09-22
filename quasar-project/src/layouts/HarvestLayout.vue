@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+    <q-layout view="lHh Lpr lFf">
     <q-page-container>
 	<q-item v-for="hp in totalHarvestedPlants" :key="hp">
 	    <div>
@@ -59,7 +59,7 @@
 	<router-view />
 	
     </q-page-container>
-  </q-layout>
+      </q-layout>
 </template>
 
 <script>
@@ -109,6 +109,7 @@
 	 };
      },
      created() {
+	 this.apiCheckLogin();
 	 this.totalHarvestedPlants = 0;
 	 this.AnotherHarvestedPlant();
 	 this._harvestedPlants.push({
@@ -128,6 +129,19 @@
 	 console.log("harvestedplants", this._harvestedPlants)
      },
      methods: {
+	 apiCheckLogin: function () {
+	     axios.get("/api/who-am-i/").then((response) => {
+		 console.log(response)
+		 if (response.status == 200 && response.data.status == 200) {
+		     this._logged_in = true;
+		     console.log(this._harvestData)
+		 } else {
+		     this._logged_in = false;
+		     window.location.href = "/login";
+		 }
+	     })
+	 },
+
 	 AnotherHarvestedPlant: function () {
 	     this.totalHarvestedPlants = this.totalHarvestedPlants + 1;
 	     this._harvestedPlants.push({

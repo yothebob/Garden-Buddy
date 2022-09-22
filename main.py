@@ -62,13 +62,28 @@ def load_user(user_id):
 @login_required
 def logout():
     logout_user()
-    return redirect("/")
+    return jsonify({"status": 200, "message": "Successful logout"})
+
+@app.route('/api/who-am-i/', methods=['GET'])
+def whoami():
+    try:
+        if current_user:
+            if current_user.is_anonymous == True:
+                return jsonify({"status": 500, "message": "Not Authorized"})
+            else:
+                return jsonify({"status": 200, "message": "logged in"})
+        else:
+            return jsonify({"status": 500, "message": "Not Logged in"})
+    except:
+        return jsonify({"status": 500, "message": "Not Logged in"})
 
 #TODO Add ability to create user, on creation generate random token string for user (this needs to refresh every so often)
-# @app.route('/create/', methods=['GET', 'POST'])
-# def create_page():
-#     #this is where you will make a user 
-#     return render_template("create.html",create_form=create_form)
+@app.route('/api/create/', methods=['POST'])
+def create_page():
+    # decoded_json = json.loads(request.get_data().decode("UTF-8"))
+    pass
+    #this is where you will make a user 
+    # return render_template("create.html",create_form=create_form)
 
 
 @app.route('/api/login/', methods=['GET', 'POST'])
@@ -114,6 +129,11 @@ def api_harvest():
     if True:
         for item in decoded_json["harvested"]:
             # TODO fix sql injectsion
+            if item['userplant_id'] != 0:
+                item['plant_id'] = adb.cur.execute(f"SELECT plant_id FROM user_plants WHERE rowid={item['userplant_id']}").fetchone()[0]
+            # if item['plant_id'] != 0:
+            #     item['userplant_id'] = adb.cur.execute(f"SELECT plant_id FROM user_plants WHERE rowid={item['userplant_id']}").fetchone()[0]
+            
             adb.cur.execute(f"INSERT into harvests (user_id, plant_id, userplant_id, garden_id, harvested_at, quantity, pound, ounce, notes) VALUES ({decoded_json['user_id']},{item['plant_id']},{item['userplant_id']},{item['garden_id']},'{decoded_json['date']}',{item['pound']},{item['quantity'] if item['quantity'] is not None else 'null' },{item['ounce']},'{item['notes']}')")
         adb.con.commit()
 
@@ -288,15 +308,13 @@ def api_harvest_serializer():
     if user_id is None:
         return jsonify({"status": 500, "message": "No user supplied"})
     serialized = {}
-    harvests_titles = ["harvested_at", "plant_name", "userplant_name", "garden_name", "quantity", "pound", "ounce", "notes"]
+    harvests_titles = ["harvested_at", "plant_name", "garden_name", "quantity", "pound", "ounce", "notes"]
     #TODO add metadata field
-    #TODO make rowid 1 for plant,userplant, and variety be a generic default (Not selected)
 
     q_string = """
     SELECT
     h.harvested_at,
     p.name,
-    up.name,
     ug.name,
     h.quantity,
     h.pound,
@@ -304,11 +322,14 @@ def api_harvest_serializer():
     h.notes
     from harvests as h
     INNER JOIN plants as p ON h.plant_id = p.rowid
-    INNER JOIN user_plants as up ON h.userplant_id = up.rowid
     INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
     WHERE h.user_id = {}""".format(user_id)
     query_harvests = adb.cur.execute(q_string).fetchall()
 
+    # maybe here do another sql command and loop through data to add a user plant??
+    # INNER JOIN user_plants as up ON h.userplant_id = up.rowid
+    # up.name,
+    
     serialized["harvests"] = [{harvests_titles[i] : harvests[i] for i in range(len(harvests_titles))} for harvests in query_harvests]
     return jsonify(serialized)
 
