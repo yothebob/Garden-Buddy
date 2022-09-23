@@ -78,10 +78,21 @@ def whoami():
         return jsonify({"status": 500, "message": "Not Logged in"})
 
 #TODO Add ability to create user, on creation generate random token string for user (this needs to refresh every so often)
-@app.route('/api/create/', methods=['POST'])
-def create_page():
-    # decoded_json = json.loads(request.get_data().decode("UTF-8"))
-    pass
+@app.route('/api/create-user/', methods=['POST'])
+def create_user():
+    decoded_json = json.loads(request.get_data().decode("UTF-8"))
+    username_taken = adb.cur.execute("SELECT EXISTS(SELECT * FROM users WHERE username='{}')".format(decoded_json["username"])).fetchone()
+    if username_taken[0] != 0:
+        return jsonify({"status": 500, "message": "Username already exsists"})
+    else:
+        # try:
+        adb.cur.execute("INSERT INTO users (username, password) VALUES ('{}', '{}')".format(decoded_json["username"],decoded_json["password"]))
+        adb.con.commit()
+        # except:
+        
+        # return jsonify({"status": 500, "message": "Error adding user"})
+        return jsonify({"status": 200, "message": "User Created"})
+        
     #this is where you will make a user 
     # return render_template("create.html",create_form=create_form)
 
@@ -97,7 +108,6 @@ def login_page():
     if request.method == "POST":
         #TODO add pass encryption probably
         query = adb.cur.execute(f"SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE username='{username}' AND password='{password}'").fetchone()
-
         print(query)
         if query is not None:
             instance = User(query[0],query[1],query[2],query[3],query[4],query[5])

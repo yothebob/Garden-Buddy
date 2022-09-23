@@ -15,6 +15,13 @@ const routes = [
     ]
   },
   {
+    path: '/create/',
+    component: () => import('layouts/CreateUserLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue') }
+    ]
+  },
+  {
     path: '/home/',
     component: () => import('layouts/HomeLayout.vue'),
     children: [

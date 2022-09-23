@@ -114,6 +114,13 @@ need to be logged in (and eventually jwt)
   }
 #+END_SRC
 ** Create Calls
+*** /api/create-user/:
+#+BEGIN_SRC javascript
+  {
+      "username": "admin",
+      "password": "admin"
+  }
+#+END_SRC 
 *** /api/harvest/:
 #+BEGIN_SRC javascript
 {
