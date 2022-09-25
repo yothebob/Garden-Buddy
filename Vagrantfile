@@ -73,8 +73,10 @@ Vagrant.configure("2") do |config|
     python3 -m venv /var/www/garden-tracker/venv
     apt-get install -y python3-pip
     cd /var/www/garden-tracker;
+    touch garden-tracker.db
     source venv/bin/activate;
     pip install -r requirements.txt;
+    python3 -c "from main import app_migrate;app_migrate()"
     cp /var/www/garden-tracker/deployment/nginx.conf /etc/nginx/sites-enabled/default;
     cp /var/www/garden-tracker/deployment/uwsgi.ini /etc/uwsgi/apps-enabled/garden-tracker.ini;
     mkdir /var/log/garden;

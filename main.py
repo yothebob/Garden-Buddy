@@ -49,7 +49,9 @@ login_manager = LoginManager(app)
 login_manager.init_app(app)
 
 adb = AppDataBase("/var/www/garden-tracker/garden-tracker.db")
-# adb.migrate()
+
+def app_migrate(adb=adb):
+    adb.migrate()
 
 
 @login_manager.user_loader
