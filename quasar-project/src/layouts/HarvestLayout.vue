@@ -1,64 +1,64 @@
 <template>
     <q-layout view="lHh Lpr lFf">
-    <q-page-container>
-	<q-item v-for="hp in totalHarvestedPlants" :key="hp">
-	    <div>
-		<h3>What Kind of plant?</h3>
-		<div>
-		    <q-radio v-model.string="_harvestedPlants[hp].plantType" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="userplant" label="Tracked Plant" />
-		    <q-radio v-model.string="_harvestedPlants[hp].plantType" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="plant" label="Plant" />
-		    <br/>
-		</div>
-		<div v-if="_harvestedPlants[hp].plantType == 'plant'">
-		    <q-select rounded outlined v-model.number="_harvestedPlants[hp].plant_id" :options="_plants" emit-value label="Plant Name" />
-		<br/>
-		</div>
-		<div v-else >
-		    <q-select rounded outlined v-model.number="_harvestedPlants[hp].userplant_id" :options="_userPlants" emit-value label="Tracked Plant Name" />
-		    <br/>
-		</div>
+	<q-page-container>
+	    <div class="app-content">
+		<q-item v-for="hp in totalHarvestedPlants" :key="hp">
+		    <div>
+			<h3>What Kind of plant?</h3>
+			<div>
+			    <q-radio v-model.string="_harvestedPlants[hp].plantType" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="userplant" label="Tracked Plant" />
+			    <q-radio v-model.string="_harvestedPlants[hp].plantType" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="plant" label="Plant" />
+			    <br/>
+			</div>
+			<div v-if="_harvestedPlants[hp].plantType == 'plant'">
+			    <q-select rounded outlined v-model.number="_harvestedPlants[hp].plant_id" :options="_plants" emit-value label="Plant Name" />
+			    <br/>
+			</div>
+			<div v-else >
+			    <q-select rounded outlined v-model.number="_harvestedPlants[hp].userplant_id" :options="_userPlants" emit-value label="Tracked Plant Name" />
+			    <br/>
+			</div>
+			
+			<q-select rounded outlined v-model.number="_harvestedPlants[hp].garden_id" :options="_gardens" emit-value label="Which Garden?" /><br/>
+			<q-input rounded outlined v-model.number="_harvestedPlants[hp].quantity" label="Quantity" /><br/>
+			<q-input rounded outlined v-model.number="_harvestedPlants[hp].pound" label="Pound" /><br/>
+			<q-input rounded outlined v-model.number="_harvestedPlants[hp].ounce" label="Ounce" /><br/>
+			<q-input
+			    v-model.string="_harvestedPlants[hp].notes"
+			    filled
+			    autogrow
+			    label="Notes"
+			/>
+			<br/>
+			
+			<q-btn @click="AnotherHarvestedPlant" color="white" text-color="black" label="Track Another Plant" /><br/>
+		    </div>
+		    <q-btn @click="submitHarvest" color="white" text-color="black" label="Submit Harvest" /><br/>
+		    
+		</q-item>
 		
-		<q-select rounded outlined v-model.number="_harvestedPlants[hp].garden_id" :options="_gardens" emit-value label="Which Garden?" /><br/>
-		<q-input rounded outlined v-model.number="_harvestedPlants[hp].quantity" label="Quantity" /><br/>
-		<q-input rounded outlined v-model.number="_harvestedPlants[hp].pound" label="Pound" /><br/>
-		<q-input rounded outlined v-model.number="_harvestedPlants[hp].ounce" label="Ounce" /><br/>
-		<q-input
-		    v-model.string="_harvestedPlants[hp].notes"
-		    filled
-		    autogrow
-		    label="Notes"
-		/>
-		<br/>
-
-		<q-btn @click="AnotherHarvestedPlant" color="white" text-color="black" label="Track Another Plant" /><br/>
+		<div>
+		    <div v-if="_alert == true">
+			<q-dialog v-model="_alert">
+			    <q-card>
+				<q-card-section>
+				    <div class="text-h6">Alert</div>
+				</q-card-section>
+				
+				<q-card-section class="q-pt-none">
+				    {{_message}}
+				</q-card-section>
+				
+				<q-card-actions align="right">
+				    <q-btn flat label="OK" color="primary" v-close-popup />
+				</q-card-actions>
+			    </q-card>
+			</q-dialog>
+		    </div>
+		</div>
+		<router-view />
 	    </div>
-	    <q-btn @click="submitHarvest" color="white" text-color="black" label="Submit Harvest" /><br/>
-
-	</q-item>
-
-	<div>
-	    <div v-if="_alert == true">
-		<q-dialog v-model="_alert">
-		    <q-card>
-			<q-card-section>
-			    <div class="text-h6">Alert</div>
-			</q-card-section>
-			
-			<q-card-section class="q-pt-none">
-			    {{_message}}
-			</q-card-section>
-			
-			<q-card-actions align="right">
-			    <q-btn flat label="OK" color="primary" v-close-popup />
-			</q-card-actions>
-		    </q-card>
-		</q-dialog>
-	    </div>
-	</div>
-
-	<router-view />
-	
-    </q-page-container>
+	</q-page-container>
       </q-layout>
 </template>
 

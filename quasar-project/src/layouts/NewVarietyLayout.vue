@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-
+      <div class="app-content">
     <q-page-container>
 	<div>
 	    <h3>Add New Variety</h3>
@@ -42,7 +42,8 @@
 	    </q-dialog>
 	</div>
 	<router-view />
-    </q-page-container>
+        </q-page-container>
+      </div>
   </q-layout>
 </template>
 

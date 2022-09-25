@@ -1,11 +1,12 @@
 <template>
     <q-layout view="lHh Lpr lFf">
 	<q-page-container>
+	    <div class="app-content">
 	    <div v-if="_logged_in == true">
 		<div>
 		    <q-btn to="/plant/new/" label="Add a new Plant" outline color="green" /><br/>
 		    <q-btn to="/variety/new/" label="Add a new Variety" outline color="green" /><br/>
-		    <q-btn to="/api/logout/" label="Logout" outline color="yellow" /><br/>
+		    <q-btn @click="apiLogOut" label="Logout" outline color="yellow" /><br/>
 		</div>
 		<div>
 		    <h3>Recently Harvested</h3>
@@ -48,6 +49,7 @@
 	    <div v-else>
 		<p>Please Log in</p>
 	    </div>
+	    </div>
 	    <router-view />
 	</q-page-container>
     </q-layout>
@@ -76,6 +78,14 @@
      },
 
      methods: {
+	 apiLogOut: function () {
+	     axios.post("/api/logout/",{}).then((response) => {
+		 console.log(response)
+		 if (response.status == 200) {
+		     window.location.href = "/login/"
+		 }
+	     })
+	 },
 	 apiCheckLogin: function () {
 	     axios.get("/api/who-am-i/").then((response) => {
 		 console.log(response)

@@ -1,9 +1,10 @@
 <template>
-<q-layout view="lHh Lpr lFf">
+    <q-layout view="lHh Lpr lFf">
+	<div class="app-content">
     <q-page-container>
 	
 	<div>
-	    <div>
+	    <div style="padding-top:10%;padding-left:25%;">
 		<q-btn @click="editPlantTrack" color="white" text-color="black" label="Edit Plant" />
 		<q-btn @click="newPlantTrack" color="white" text-color="black" label="Add Plant" />
 		<q-btn @click="listPlantTrack" color="white" text-color="black" label="List Plant" />
@@ -90,8 +91,9 @@
 	</div>
 	
 	<router-view />
-    </q-page-container>
-  </q-layout>
+        </q-page-container>
+	</div>
+    </q-layout>
 </template>
 
 <script>

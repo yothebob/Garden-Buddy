@@ -1,5 +1,6 @@
 <template>
- <q-layout view="lHh Lpr lFf">
+    <q-layout view="lHh Lpr lFf">
+	<div class="app-content">
       <q-page-container>
 	  <div>
 	      <h3>Add New Plant</h3><br/>
@@ -43,7 +44,8 @@
 
 	  <router-view />
     </q-page-container>
-  </q-layout>
+	</div>
+    </q-layout>
 </template>
 
 <script>

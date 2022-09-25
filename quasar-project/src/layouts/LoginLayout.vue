@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-page-container>
-	<div>
+	<div class="app-content">
 	    <h3>Login</h3><br/>
 	    <!-- <label for="">Username</label><br/>
 		 <input v-model="_username" name="username" type="text" /><br/> -->

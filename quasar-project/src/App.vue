@@ -18,7 +18,6 @@
 
 	</q-toolbar>
     </q-header>
-
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
@@ -30,16 +29,16 @@
         >
 	    GardenBuddy
         </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+	<div>
+            <EssentialLink
+		v-for="link in essentialLinks"
+		       :key="link.title"
+		v-bind="link"
+            />
+	</div>
       </q-list>
     </q-drawer>
-
-  </q-layout>
+    </q-layout>
 
 
 </template>
