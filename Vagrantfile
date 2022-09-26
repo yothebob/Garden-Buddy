@@ -81,7 +81,9 @@ Vagrant.configure("2") do |config|
     cp /var/www/garden-tracker/deployment/uwsgi.ini /etc/uwsgi/apps-enabled/garden-tracker.ini;
     mkdir /var/log/garden;
     cd /var/www/garden-tracker/quasar-project
+    npm install -g npm@latest
     npm install -g @quasar/cli
+    npm install
     quasar build
     service uwsgi restart;
     service nginx restart;
