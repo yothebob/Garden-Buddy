@@ -1,69 +1,69 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-	<q-toolbar>
-            <q-btn
-		flat
-		dense
-		round
-		icon="menu"
-		aria-label="Menu"
-		@click="toggleLeftDrawer"
-            />
-
-            <q-toolbar-title>
-		Garden Buddy
-            </q-toolbar-title>
-
-	</q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-	    GardenBuddy
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
-
-    <q-page-container>
-	<router-view />
-	
-	<div v-for="item in _harvestedPlants">
-	    <div>
-		<input name="userplant" type="text" value=""/>
-		<input name="plant" type="text" value=""/>
-		<input name="quantity" type="text" value=""/>
-		<input name="pound" type="text" value=""/>
-		<input name="ounce" type="text" value=""/>
-		<input name="notes" type="text" value=""/>
-		<input name="metadata" type="text" value=""/>
-	    </div>    
-	</div>
-	<div>
-	    <button @click="AnotherHarvestedPlant">
-		Track Another Plant
-	    </button>
-	</div>
-    </q-page-container>
-  </q-layout>
+    <q-layout view="lHh Lpr lFf">
+	<q-page-container>
+	    <div class="app-content">
+		<q-item v-for="hp in totalHarvestedPlants" :key="hp">
+		    <div>
+			<h3>What Kind of plant?</h3>
+			<div>
+			    <q-radio v-model.string="_harvestedPlants[hp].plantType" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="userplant" label="Tracked Plant" />
+			    <q-radio v-model.string="_harvestedPlants[hp].plantType" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="plant" label="Plant" />
+			    <br/>
+			</div>
+			<div v-if="_harvestedPlants[hp].plantType == 'plant'">
+			    <q-select rounded outlined v-model.number="_harvestedPlants[hp].plant_id" :options="_plants" emit-value label="Plant Name" />
+			    <br/>
+			</div>
+			<div v-else >
+			    <q-select rounded outlined v-model.number="_harvestedPlants[hp].userplant_id" :options="_userPlants" emit-value label="Tracked Plant Name" />
+			    <br/>
+			</div>
+			
+			<q-select rounded outlined v-model.number="_harvestedPlants[hp].garden_id" :options="_gardens" emit-value label="Which Garden?" /><br/>
+			<q-input rounded outlined v-model.number="_harvestedPlants[hp].quantity" label="Quantity" /><br/>
+			<q-input rounded outlined v-model.number="_harvestedPlants[hp].pound" label="Pound" /><br/>
+			<q-input rounded outlined v-model.number="_harvestedPlants[hp].ounce" label="Ounce" /><br/>
+			<q-input
+			    v-model.string="_harvestedPlants[hp].notes"
+			    filled
+			    autogrow
+			    label="Notes"
+			/>
+			<br/>
+			
+			<q-btn @click="AnotherHarvestedPlant" color="white" text-color="black" label="Track Another Plant" /><br/>
+		    </div>
+		    <q-btn @click="submitHarvest" color="white" text-color="black" label="Submit Harvest" /><br/>
+		    
+		</q-item>
+		
+		<div>
+		    <div v-if="_alert == true">
+			<q-dialog v-model="_alert">
+			    <q-card>
+				<q-card-section>
+				    <div class="text-h6">Alert</div>
+				</q-card-section>
+				
+				<q-card-section class="q-pt-none">
+				    {{_message}}
+				</q-card-section>
+				
+				<q-card-actions align="right">
+				    <q-btn flat label="OK" color="primary" v-close-popup />
+				</q-card-actions>
+			    </q-card>
+			</q-dialog>
+		    </div>
+		</div>
+		<router-view />
+	    </div>
+	</q-page-container>
+      </q-layout>
 </template>
 
 <script>
  import { defineComponent, ref } from 'vue'
- import EssentialLink from 'components/EssentialLink.vue'
  import axios from 'axios'
  
  const linksList = [
@@ -97,37 +97,91 @@
      name: 'HarvestLayout',
      data: () => {
 	 return {
-	     "_harvestedPlants": null,
+	     "_alert": null,
+	     "_message": null,
+	     "_userData": null,
+	     "_harvestedPlants": [],
+	     "totalHarvestedPlants": null,
+	     "_plants": null,
+	     "_gardens": null,
+	     "_varietys": null,
+	     "_userPlants": null,
 	 };
      },
-     components: {
-	 EssentialLink
-     },
-     setup () {
-	 const leftDrawerOpen = ref(false)
-	 
-	 return {
-	     essentialLinks: linksList,
-	     leftDrawerOpen,
-	     toggleLeftDrawer () {
-		 leftDrawerOpen.value = !leftDrawerOpen.value
-	     }
-	 }
+     created() {
+	 this.apiCheckLogin();
+	 this.totalHarvestedPlants = 0;
+	 this.AnotherHarvestedPlant();
+	 this._harvestedPlants.push({
+	     "plantType": "",
+	     "userplant_id": 0,
+	     "garden_id": 0,
+	     "plant_id": 0,
+	     "quantity": 0,
+	     "pound": 0,
+	     "ounce": 0,
+	     "notes": "",
+	     "metadata": ""
+	 })
+
+	 this.apiGetPlantData();
+	 console.log(this.apiGetUserData());
+	 console.log("harvestedplants", this._harvestedPlants)
      },
      methods: {
-	 AnotherHarvestedPlant: function () {
-	     this._harvestedPlants.push({
-		 "userplant_id": null,
-		 "plant_id": null,
-		 "quantity": null,
-		 "pound": null,
-		 "ounce": null,
-		 "notes": null,
-		 "metadata": null
+	 apiCheckLogin: function () {
+	     axios.get("/api/who-am-i/").then((response) => {
+		 console.log(response)
+		 if (response.status == 200 && response.data.status == 200) {
+		     this._logged_in = true;
+		     console.log(this._harvestData)
+		 } else {
+		     this._logged_in = false;
+		     window.location.href = "/login";
+		 }
 	     })
+	 },
+
+	 AnotherHarvestedPlant: function () {
+	     this.totalHarvestedPlants = this.totalHarvestedPlants + 1;
+	     this._harvestedPlants.push({
+		 "userplant_id": 0,
+		 "garden_id": 0,
+		 "plant_id": 0,
+		 "quantity": 0,
+		 "pound": 0,
+		 "ounce": 0,
+		 "notes": "",
+		 "metadata": ""
+	     })
+	 },
+	 submitHarvest: function() {
+	     // for now the first index of the array seems to be blank? here is the fix, remove if doesnt nwork
+	     this._harvestedPlants.shift();
+	     var date = new Date();
+	     let dateString = String(((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear())
+	     let sendData = {
+		 "user_id": this._userData.user_id,
+		 "date": dateString,
+		 "harvested": this._harvestedPlants
+	     }
+	     console.log("sendData",sendData)
+	     axios.post('/api/harvest/', sendData).then((response) => {
+		 if (response.status === 200) {
+		     console.log(response)
+		     this._alert = true
+		     this._message = "Save Successful"
+		 } else {
+		     this._alert = true
+		     this._message = "Uh Oh Something went wrong!"
+		 }
+	     }) // put error here.. if i remember
 	 },
 	 apiGetPlantData: function () {
 	     axios.get("/api/plants/").then((response) => {
+		 if (response.status == 200) {
+		     this._plants = response.data.plants
+		 }
 		 console.log(response);
 	     })
 	 },
@@ -138,20 +192,16 @@
 	 },
 	 apiGetUserData: function () {
 	     /* TODO add jwt */
-	     let user_id = 1;
 	     // I think I can make an api call that checks the backend for user_id and passes that up
-	     axios.get(`/api/user/user_id=${user_id}`).then((response) => {
+	     axios.get(`/api/user/`).then((response) => {
 		 console.log(response);
-	     })
-	 },
-	 printme: function () {
-	     /* TODO add jwt */
-	     axios.post(`/api/login/?username=${this._username}&password=${this._password}`, {}).then((response) => {
-		 if (response.status === 200) {
-		     window.location.href = '/home/'
+		 if (response.status == 200) {
+		     this._userPlants = response.data.user_plants;
+		     this._gardens = response.data.gardens;
+		     this._userData = response.data;
 		 }
 	     })
-	 }
+	 },
      }
  })
 </script>

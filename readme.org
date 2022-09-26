@@ -1,7 +1,57 @@
 
+
 #+TITLE: Garden Tracker
 #+AUTHOR: Brandon  Brodrick
 
+* dev envs
+** Vagrant
+*** install
+**** arch
+#+BEGIN_SRC bash
+  sudo pacman -S vagrant
+#+END_SRC
+**** ubuntu
+#+BEGIN_SRC bash
+  sudo apt-get install vagrant
+#+END_SRC
+
+*** development deploy
+inside project main directory...
+  - vagrant up
+  - vagrant ssh
+  .. wow that was alot harder then lxd *sigh* \( ¬▂¬) 
+** nginx
+Nginx and uwsgi configs are in the ./deployment/ folder. Update according to your deployment needs
+** restarting server/ uwsgi
+in vagrant server (vagrant ssh)
+*** uwsgi
+#+BEGIN_SRC bash
+  sudo service uwsgi restart
+#+END_SRC 
+*** nginx
+#+BEGIN_SRC bash
+  sudo service nginx restart
+#+END_SRC 
+* migrations
+HOW TO MIGRATE:
+- open ./migrations.py
+- in "unrun_migrations" add new migration with "{{MIGRATION_NUMBER}} : {{MIGRATION_COMMAND}},"
+- in main.py run AppDataBase migrate function (uncomment main.py ln 52, run main.py, then comment that line again)
+
+* frontend
+** QUASAR
+*** the front end code is in ./quasar-project
+*** install quasar with
+#+BEGIN_SRC bash
+  npm -i -g @quasar/cli
+#+END_SRC 
+*** building the front end
+In the vagrant server it allreay builds the front end, But you can also build it locally or on ther server again, Just go to the quasar-project folder and run  
+#+BEGIN_SRC bash
+ quasar build
+ #+END_SRC 
+*** Front end Plans
+ I plan to make this a vue front end with abilities to make/adjust garden layouts. show and create graphs live and ext.
 * API
 ** serialize
 *** /api/user/:
@@ -50,14 +100,14 @@ This NEEDS jwt auth for using
   {
       "plants":[
 	  {
-	      "plant_id": 1,
-	      "name": "Green Beans",
+	      "value": 1,
+	      "label": "Green Beans",
 	      "description": "immature beans, in bush and pole variety.", 
 	      "info_url": "www.google.com" 
 	  },
 	  {
-	      "plant_id": 2,
-	      "name": "Buckwheat",
+	      "value": 2,
+	      "label": "Buckwheat",
 	      "description": "A sudo-ceral grain also grown as a cover crop.", 
 	      "info_url": "www.google.com" 
 	  }
@@ -85,7 +135,42 @@ no Jwt auth required
       ]
   }
 #+END_SRC 
+*** /api/userharvests/:
+need to be logged in (and eventually jwt)
+#+BEGIN_SRC javascript
+  {"harvests":[
+      {
+	  "garden_id":1,
+	  "harvested_at":"9/14/2022",
+	  "notes":"lots of beans",
+	  "ounce":5,
+	  "plant_id":1,
+	  "pound":1,
+	  "quantity":1,
+	  "userplant_id":1
+      },
+
+      {
+	  "garden_id":0,
+	  "harvested_at":"09/03/2022",
+	  "notes":"",
+	  "ounce":0,
+	  "plant_id":0,
+	  "pound":0,
+	  "quantity":0,
+	  "userplant_id":0
+      },
+  ]
+  }
+#+END_SRC
 ** Create Calls
+*** /api/create-user/:
+#+BEGIN_SRC javascript
+  {
+      "username": "admin",
+      "password": "admin"
+  }
+#+END_SRC 
 *** /api/harvest/:
 #+BEGIN_SRC javascript
 {
@@ -206,53 +291,6 @@ no Jwt auth required
 ** /login/
 #+BEGIN_SRC json
 #+END_SRC 
-
-* dev envs
-I was going to try lxd but it sucks... I mayy try docker. but i will start with vagrant.
-** Vagrant
-*** install
-**** arch
-#+BEGIN_SRC bash
-  sudo pacman -S vagrant
-#+END_SRC
-**** ubuntu
-#+BEGIN_SRC bash
-  sudo apt-get install vagrant
-#+END_SRC
-
-*** development deploy
-inside project main directory...
-  - vagrant up
-  - vagrant ssh
-  .. wow that was alot harder then lxd *sigh* \( ¬▂¬) 
-** nginx
-Nginx and uwsgi configs are in the ./deployment/ folder. Update according to your deployment needs
-** ansible? 
-* migrations
-HOW TO MIGRATE:
-- open ./migrations.py
-- in "unrun_migrations" add new migration with "{{MIGRATION_NUMBER}} : {{MIGRATION_COMMAND}},"
-- in main.py run AppDataBase migrate function
-
-* frontend
-** QUASAR
-*** the front end code is in ./quasar-project
-***  install quasar with
-#+BEGIN_SRC bash
-  npm -i -g @quasar/cli
-#+END_SRC 
-*** run quasar locally with (but use vagrant)
-#+BEGIN_SRC bash
- quasar dev run
-#+END_SRC 
-*** build front end for nginx
-#+BEGIN_SRC bash
-  quasar build
-#+END_SRC 
-
- I would like this to be decoupled from the backend.. I may build it with templates for now? templates are alittle quicker and make dev envs less work.
-
- I plan to make this a vue front end with abilities to make/adjust garden layouts. show and create graphs live and ext.
 
 * TODO plans
 yeah.. I am not really liking sqlite for this... I think I will transfer it over to another database style... 

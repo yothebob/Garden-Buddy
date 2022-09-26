@@ -49,7 +49,9 @@ login_manager = LoginManager(app)
 login_manager.init_app(app)
 
 adb = AppDataBase("/var/www/garden-tracker/garden-tracker.db")
-# adb.migrate()
+
+def app_migrate(adb=adb):
+    adb.migrate()
 
 
 @login_manager.user_loader
@@ -58,17 +60,43 @@ def load_user(user_id):
     return User(user[0],user[1],user[2],user[3],user[4],user[5])
 
 
-@app.route('/api/logout/', methods=['GET', 'POST'])
+@app.route('/api/logout/', methods=['POST'])
 @login_required
 def logout():
     logout_user()
-    return redirect("/")
+    return jsonify({"status": 200, "message": "Successful logout"})
+
+@app.route('/api/who-am-i/', methods=['GET'])
+def whoami():
+    try:
+        if current_user:
+            if current_user.is_anonymous == True:
+                return jsonify({"status": 500, "message": "Not Authorized"})
+            else:
+                return jsonify({"status": 200, "message": "logged in"})
+        else:
+            return jsonify({"status": 500, "message": "Not Logged in"})
+    except:
+        return jsonify({"status": 500, "message": "Not Logged in"})
 
 #TODO Add ability to create user, on creation generate random token string for user (this needs to refresh every so often)
-# @app.route('/create/', methods=['GET', 'POST'])
-# def create_page():
-#     #this is where you will make a user 
-#     return render_template("create.html",create_form=create_form)
+@app.route('/api/create-user/', methods=['POST'])
+def create_user():
+    decoded_json = json.loads(request.get_data().decode("UTF-8"))
+    username_taken = adb.cur.execute("SELECT EXISTS(SELECT * FROM users WHERE username='{}')".format(decoded_json["username"])).fetchone()
+    if username_taken[0] != 0:
+        return jsonify({"status": 500, "message": "Username already exsists"})
+    else:
+        # try:
+        adb.cur.execute("INSERT INTO users (username, password) VALUES ('{}', '{}')".format(decoded_json["username"],decoded_json["password"]))
+        adb.con.commit()
+        # except:
+        
+        # return jsonify({"status": 500, "message": "Error adding user"})
+        return jsonify({"status": 200, "message": "User Created"})
+        
+    #this is where you will make a user 
+    # return render_template("create.html",create_form=create_form)
 
 
 @app.route('/api/login/', methods=['GET', 'POST'])
@@ -82,7 +110,6 @@ def login_page():
     if request.method == "POST":
         #TODO add pass encryption probably
         query = adb.cur.execute(f"SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE username='{username}' AND password='{password}'").fetchone()
-
         print(query)
         if query is not None:
             instance = User(query[0],query[1],query[2],query[3],query[4],query[5])
@@ -104,7 +131,7 @@ def login_page():
 #################     NEW CALLS     ######################################
 ##########################################################################
 
-
+@login_required
 @app.route("/api/harvest/", methods=["POST"])
 def api_harvest():
     # TODO add jwt auth
@@ -114,6 +141,11 @@ def api_harvest():
     if True:
         for item in decoded_json["harvested"]:
             # TODO fix sql injectsion
+            if item['userplant_id'] != 0:
+                item['plant_id'] = adb.cur.execute(f"SELECT plant_id FROM user_plants WHERE rowid={item['userplant_id']}").fetchone()[0]
+            # if item['plant_id'] != 0:
+            #     item['userplant_id'] = adb.cur.execute(f"SELECT plant_id FROM user_plants WHERE rowid={item['userplant_id']}").fetchone()[0]
+            
             adb.cur.execute(f"INSERT into harvests (user_id, plant_id, userplant_id, garden_id, harvested_at, quantity, pound, ounce, notes) VALUES ({decoded_json['user_id']},{item['plant_id']},{item['userplant_id']},{item['garden_id']},'{decoded_json['date']}',{item['pound']},{item['quantity'] if item['quantity'] is not None else 'null' },{item['ounce']},'{item['notes']}')")
         adb.con.commit()
 
@@ -148,6 +180,7 @@ def api_new_variety():
     return jsonify({"status": 200, "message": "Saved Plant Successfully!"})
 
 
+@login_required
 @app.route("/api/garden/new", methods=["POST"])
 def api_new_garden():
     # TODO add jwt auth
@@ -163,6 +196,7 @@ def api_new_garden():
     return jsonify({"status": 200, "message": "Saved Garden Successfully!"})
 
 
+@login_required
 @app.route("/api/userplant/new", methods=["POST"])
 def api_new_user_plant():
     # TODO add jwt auth
@@ -209,6 +243,7 @@ def api_update_variety():
     return jsonify({"status": 200, "message": "Saved Plant Successfully!"})
 
 
+@login_required
 @app.route("/api/garden/update", methods=["POST"])
 #TODO add user jwt auth 
 def api_update_garden():
@@ -222,7 +257,7 @@ def api_update_garden():
         return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
     return jsonify({"status": 200, "message": "Saved Garden Successfully!"})
 
-
+@login_required
 @app.route("/api/userplant/update", methods=["POST"])
 def api_update_user_plant():
     # TODO add jwt auth
@@ -242,28 +277,26 @@ def api_update_user_plant():
 #################    SERIALIZERS   #######################################
 ##########################################################################
 
-
+@login_required
 @app.route("/api/user/", methods=["GET"])
 def api_user_serializer():
     #TODO add jwt auth
     # fornow using current_user, will use that with frontend jwt
+    if current_user.is_anonymous == True:
+        return jsonify({"status": 500, "message": "Not Authorized"})
+
     serialized = {}
-    print(current_user.is_anonymous)
-    print(current_user.is_authenticated)
-    print(current_user.id)
-    user_id = request.args.get("user_id", None)
-    print(user_id)
+    user_id = current_user.id
+
     if user_id is None:
         return jsonify({"status": 500, "message": "No user supplied"})
-    if current_user.is_anonymous == True or int(current_user.id) != int(user_id):
-        return jsonify({"status": 500, "message": "Not Authorized"})
     else:
         user_fields = adb.cur.execute(f"select name,username from users where rowid={user_id}").fetchone()
         garden_fields = adb.cur.execute(f"select rowid ,name, description, layout, metadata from user_gardens where user_id={user_id}").fetchall()
         userplant_fields = adb.cur.execute(f"select rowid, plant_id, variety_id, garden_id, name, description, metadata from user_plants where user_id={user_id}").fetchall()
 
-        garden_titles = ["garden_id" ,"name", "description", "layout", "metadata"]
-        userplant_titles = ["userplant_id", "plant_id", "variety_id", "garden_id", "name", "description", "metadata"]
+        garden_titles = ["value" ,"label", "description", "layout", "metadata"]
+        userplant_titles = ["value", "plant_id", "variety_id", "garden_id", "label", "description", "metadata"]
         
         serialized["user_id"] = user_id
         serialized["name"] = user_fields[0]
@@ -273,26 +306,49 @@ def api_user_serializer():
     return jsonify(serialized)
 
 
+
+
+@login_required
 @app.route("/api/userharvests/", methods=["GET"])
 def api_harvest_serializer():
     #TODO add jwt
-    user_id = request.args.get("user_id", None)
+    
+    if current_user.is_anonymous == True:
+        return jsonify({"status": 500, "message": "Not Authorized"})
+
+    user_id = current_user.id
     if user_id is None:
         return jsonify({"status": 500, "message": "No user supplied"})
-    if current_user.is_anonymous == True or int(current_user.id) != int(user_id):
-        return jsonify({"status": 500, "message": "Not Authorized"})
     serialized = {}
-    harvests_titles = ["harvested_at", "plant_id", "userplant_id", "garden_id", "quantity", "pound", "ounce", "notes"]
+    harvests_titles = ["harvested_at", "plant_name", "garden_name", "quantity", "pound", "ounce", "notes"]
     #TODO add metadata field
-    query_harvests = adb.cur.execute(f"SELECT harvested_at, plant_id, userplant_id, garden_id, quantity, pound, ounce, notes from harvests where user_id={user_id}").fetchall()
 
+    q_string = """
+    SELECT
+    h.harvested_at,
+    p.name,
+    ug.name,
+    h.quantity,
+    h.pound,
+    h.ounce,
+    h.notes
+    from harvests as h
+    INNER JOIN plants as p ON h.plant_id = p.rowid
+    INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
+    WHERE h.user_id = {}""".format(user_id)
+    query_harvests = adb.cur.execute(q_string).fetchall()
+
+    # maybe here do another sql command and loop through data to add a user plant??
+    # INNER JOIN user_plants as up ON h.userplant_id = up.rowid
+    # up.name,
+    
     serialized["harvests"] = [{harvests_titles[i] : harvests[i] for i in range(len(harvests_titles))} for harvests in query_harvests]
     return jsonify(serialized)
 
 @app.route("/api/plants/", methods=["GET"])
 def api_plant_serializer():
     serialized = {}
-    plant_titles = ["plant_id", "name", "description", "info_url"]
+    plant_titles = ["value", "label", "description", "info_url"]
     query_plants = adb.cur.execute("SELECT rowid, name, description, info_url from plants").fetchall()
 
     serialized["plants"] = [{plant_titles[i] : plant[i] for i in range(len(plant_titles))} for plant in query_plants]
@@ -307,7 +363,7 @@ def api_variety_serializer():
     else:
         serialized = {}
         serialized["plant_id"] = plant_id
-        variety_titles = ["variety_id", "name", "description", "info_url"]
+        variety_titles = ["value", "label", "description", "info_url"]
         query_varietys = adb.cur.execute(f"SELECT rowid, name, description, info_url from varietys WHERE plant_id={plant_id}").fetchall()
 
         serialized["varietys"] = [{variety_titles[i] : variety[i] for i in range(len(variety_titles))} for variety in query_varietys]
