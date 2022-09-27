@@ -1,8 +1,14 @@
 <template>
   <q-layout view="lHh Lpr lFf">
       <div class="app-content">
-    <q-page-container>
-	<div>
+	  <q-page-container>
+	      <div style="padding-top:10%;padding-left:25%;">
+		  <q-btn @click="editVarietyTrack" color="white" text-color="black" label="Edit Variety" />
+		  <q-btn @click="newVarietyTrack" color="white" text-color="black" label="Add Variety" />
+		  <q-btn @click="listVarietyTrack" color="white" text-color="black" label="List Variety" />
+	      </div>
+
+	      <div v-if="varietyTrack == 'new'">
 	    <h3>Add New Variety</h3>
 	    <br/>
 
@@ -23,6 +29,54 @@
 	    <q-input rounded outlined v-model="_varietyInfoUrl" label="Variety Info Url" />
 	    <br/>
 	    <q-btn @click="sendNewVariety" color="white" text-color="black" label="Add Variety" />
+	</div>
+	<div v-else-if="varietyTrack == 'edit'">
+	    <h3>Edit Variety</h3>
+	    <br/>
+
+	    <q-select rounded outlined v-model="_plantId" :options="_plants" emit-value label="Plant Name" />
+	    <br/>
+
+	    <q-select rounded outlined v-model="_plantId" :options="_apiGetVarietyData(_plantId)" emit-value label="Variety Name" />
+	    <br/>
+
+	    <q-input rounded outlined v-model="_varietyName" label=" Updated Variety Name" />
+	    <br/>
+
+	    <q-input
+		v-model="_varietyDescription"
+		filled
+		autogrow
+		label="Description"
+	    />
+	    <br/>
+	    
+	    <q-input rounded outlined v-model="_varietyInfoUrl" label="Variety Info Url" />
+	    <br/>
+	    <q-btn @click="sendNewVariety" color="white" text-color="black" label="Add Variety" />
+	</div>
+	<div v-else>
+	    <h3>Varieties</h3>
+	    <br/>
+	    <q-select rounded outlined v-model="_plantId" :options="_plants" emit-value label="Plant Name" />
+	    <br/>
+	    <div v-for="vv in _varietys" class="q-pa-md">
+		<q-list dense bordered padding class="rounded-borders">
+		    <q-item>
+			<q-item-section>
+			    <q-item-label>{{vv.label}}</q-item-label>
+			    <q-item-label caption lines="2">{{vv.description}}</q-item-label>
+			</q-item-section>
+			
+			<q-item-section side top>
+			    <q-item-label caption>High Yielder</q-item-label>
+			    <q-icon name="star" color="yellow" />
+			</q-item-section>
+		    </q-item>
+
+		    <q-separator spaced inset />
+		</q-list>
+	    </div>
 	</div>
 	<div v-if="_alert == true">
 	    <q-dialog v-model="_alert">
@@ -56,6 +110,8 @@
 
      data: () => {
 	 return {
+	     varietyTrack: null,
+	     _varietys: null,
 	     _alert: false,
 	     _message: null,
 	     _plants: [],
@@ -67,11 +123,26 @@
      },
 
      created() {
+	 this.varietyTrack = "list";
 	 this.apiCheckLogin();
 	 this.apiGetPlantData();
      },
      
      methods: {
+	 editVarietyTrack: function () {
+	     this.varietyTrack = "edit"
+	 },	 
+	 newVarietyTrack: function () {
+	     this.varietyTrack = "new"
+	 },
+	 listVarietyTrack: function () {
+	     this.varietyTrack = "list"
+	 },
+	 apiGetVarietyData: function (given_plant_id) {
+	     axios.get(`/api/varietys/plant_id=${given_plant_id}`).then((response) => {
+		 this._varietys = response.data.varietys 
+	     })
+	 },
 	 apiCheckLogin: function () {
 	     axios.get("/api/who-am-i/").then((response) => {
 		 console.log(response)
@@ -84,7 +155,6 @@
 		 }
 	     })
 	 },
-
 	 sendNewVariety: function () {
 	     let _newVarietyData = {
 		 "plant_id": this._plantId,
