@@ -18,6 +18,7 @@
 
 	       <!-- <input v-model="_password" name="password" type="text" /><br/> -->
 	       <q-btn @click="printme" color="white" text-color="black" label="Login" />
+	       <a href="/create/"> Create User</a>
 	</div>
 	<router-view />
     </q-page-container>

@@ -56,7 +56,7 @@
 		     if (response.data.status != 500) {
 			 console.log(response.data.status)
 			 this._message = response.data.message;
-			 /* window.location.href = '/home/' */
+			 window.location.href = '/login/'
 		     } else {
 			 this._message = response.data.message;
 		     }

@@ -56,7 +56,7 @@ def app_migrate(adb=adb):
 
 @login_manager.user_loader
 def load_user(user_id):
-    user = adb.cur.execute(f"SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE rowid={user_id}").fetchone()
+    user = adb.cur.execute(f"SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE rowid=?",(user_id,)).fetchone()
     return User(user[0],user[1],user[2],user[3],user[4],user[5])
 
 
@@ -83,12 +83,12 @@ def whoami():
 @app.route('/api/create-user/', methods=['POST'])
 def create_user():
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
-    username_taken = adb.cur.execute("SELECT EXISTS(SELECT * FROM users WHERE username='{}')".format(decoded_json["username"])).fetchone()
+    username_taken = adb.cur.execute("SELECT EXISTS(SELECT * FROM users WHERE username=?)",(decoded_json["username"],)).fetchone()
     if username_taken[0] != 0:
         return jsonify({"status": 500, "message": "Username already exsists"})
     else:
         # try:
-        adb.cur.execute("INSERT INTO users (username, password) VALUES ('{}', '{}')".format(decoded_json["username"],decoded_json["password"]))
+        adb.cur.execute("INSERT INTO users (username, password) VALUES (?,?)",(decoded_json["username"],decoded_json["password"]))
         adb.con.commit()
         # except:
         
@@ -109,7 +109,7 @@ def login_page():
         return jsonify({"status": 500})
     if request.method == "POST":
         #TODO add pass encryption probably
-        query = adb.cur.execute(f"SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE username='{username}' AND password='{password}'").fetchone()
+        query = adb.cur.execute("SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE username=? AND password=?",(username,password)).fetchone()
         print(query)
         if query is not None:
             instance = User(query[0],query[1],query[2],query[3],query[4],query[5])
@@ -142,9 +142,7 @@ def api_harvest():
         for item in decoded_json["harvested"]:
             # TODO fix sql injectsion
             if item['userplant_id'] != 0:
-                item['plant_id'] = adb.cur.execute(f"SELECT plant_id FROM user_plants WHERE rowid={item['userplant_id']}").fetchone()[0]
-            # if item['plant_id'] != 0:
-            #     item['userplant_id'] = adb.cur.execute(f"SELECT plant_id FROM user_plants WHERE rowid={item['userplant_id']}").fetchone()[0]
+                item['plant_id'] = adb.cur.execute("SELECT plant_id FROM user_plants WHERE rowid=?",(item['userplant_id'],)).fetchone()[0]
             
             adb.cur.execute(f"INSERT into harvests (user_id, plant_id, userplant_id, garden_id, harvested_at, quantity, pound, ounce, notes) VALUES ({decoded_json['user_id']},{item['plant_id']},{item['userplant_id']},{item['garden_id']},'{decoded_json['date']}',{item['pound']},{item['quantity'] if item['quantity'] is not None else 'null' },{item['ounce']},'{item['notes']}')")
         adb.con.commit()
@@ -159,7 +157,7 @@ def api_new_plant():
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
     try:
-        adb.cur.execute(f"INSERT into plants (name, description, info_url) VALUES ('{decoded_json['name']}','{decoded_json['description']}','{decoded_json['info_url']}')")
+        adb.cur.execute(f"INSERT into plants (name, description, info_url) VALUES (?,?,?)",(decoded_json['name'],decoded_json['description'],decoded_json['info_url']))
 
         adb.con.commit()
     except:
