@@ -2,6 +2,9 @@
     <q-layout view="lHh Lpr lFf">
 	<q-page-container>
 	    <div class="app-content">
+		<div style="padding-top: 5%;">
+		    <q-btn @click="submitHarvest" color="white" text-color="black" label="Submit Harvest" /><br/>
+		</div>
 		<q-item v-for="hp in totalHarvestedPlants" :key="hp">
 		    <div>
 			<h3>What Kind of plant?</h3>
@@ -33,10 +36,13 @@
 			
 			<q-btn @click="AnotherHarvestedPlant" color="white" text-color="black" label="Track Another Plant" /><br/>
 		    </div>
-		    <q-btn @click="submitHarvest" color="white" text-color="black" label="Submit Harvest" /><br/>
 		    
-		</q-item>
-		
+				</q-item>
+
+				<div style="padding-top: 5%;">
+				    <q-btn @click="submitHarvest" color="white" text-color="black" label="Submit Harvest" /><br/>
+				</div>
+
 		<div>
 		    <div v-if="_alert == true">
 			<q-dialog v-model="_alert">
@@ -186,7 +192,7 @@
 	     })
 	 },
 	 apiGetVarietyData: function (given_plant_id) {
-	     axios.get(`/api/varietys/plant_id=${given_plant_id}`).then((response) => {
+	     axios.get(`/api/varietys/?plant_id=${given_plant_id}`).then((response) => {
 		 console.log(response);
 	     })
 	 },

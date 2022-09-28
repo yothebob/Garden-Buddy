@@ -1,6 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-page-container>
+      <q-page-container>
+	  <div class="app-content">
 	<div>
 	    <h3>Create New User</h3><br/>
 	    <q-input rounded outlined v-model="_username" label="Username" />	    
@@ -17,8 +18,9 @@
 		   <div class="message" v-if="_message != null"> {{_message}} </div>
 
 		   <q-btn @click="createUser" color="white" text-color="black" label="Create user" />
-	</div>
-	<router-view />
+			</div>
+	  </div>
+	  <router-view />
     </q-page-container>
   </q-layout>
 </template>

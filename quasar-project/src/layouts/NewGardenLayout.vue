@@ -10,7 +10,7 @@
 		      <q-btn @click="listGardenTrack" color="white" text-color="black" label="List Garden" />
 		  </div>
 		  <div v-if="gardenTrack == 'list'">
-		      <h3>Plants</h3><br/>
+		      <h3>List Gardens</h3><br/>
 		      <div v-for="gg in _gardens" class="q-pa-md">
 			  <q-list dense bordered padding class="rounded-borders">
 			      <q-item>
@@ -108,6 +108,7 @@
 	 };
      },
      created() {
+	 this.apiCheckLogin();
 	 this._alert = false;
 	 this.apiGetUserData();
 	 this.gardenTrack = "list";
@@ -122,6 +123,19 @@
 	 listGardenTrack: function () {
 	     this.gardenTrack = "list"
 	 },
+	 apiCheckLogin: function () {
+	     axios.get("/api/who-am-i/").then((response) => {
+		 console.log(response)
+		 if (response.status == 200 && response.data.status == 200) {
+		     this._logged_in = true;
+		     console.log(this._harvestData)
+		 } else {
+		     this._logged_in = false;
+		     window.location.href = "/login";
+		 }
+	     })
+	 },
+	 
 	 apiGetUserData: function () {
 	     axios.get("/api/user/").then((response) => {
 		 console.log(response)

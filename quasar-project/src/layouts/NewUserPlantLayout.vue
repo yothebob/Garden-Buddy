@@ -49,10 +49,61 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+ import { defineComponent, ref } from 'vue'
 
-export default defineComponent({
-  name: 'NewUserLayout',
+ export default defineComponent({
+     name: 'NewUserLayout',
+     data: () => {
+	 return {
+	     _alert: null,
+	     userplantTrack: null,
+	     _message: null,
+	 };
+     },
+     created() {
+	 this.apiCheckLogin();
+	 this._alert = false;
+	 this.apiGetUserData();
+	 this.userplantTrack = "list";
+     },
+     methods: {
+	 editUserplantTrack: function () {
+	     this.userplantTrack = "edit"
+	 },	 
+	 newUserplantTrack: function () {
+	     this.userplantTrack = "new"
+	 },
+	 listUserplantTrack: function () {
+	     this.userplantTrack = "list"
+	 },
+	 apiCheckLogin: function () {
+	     axios.get("/api/who-am-i/").then((response) => {
+		 console.log(response)
+		 if (response.status == 200 && response.data.status == 200) {
+		     this._logged_in = true;
+		     console.log(this._harvestData)
+		 } else {
+		     this._logged_in = false;
+		     window.location.href = "/login";
+		 }
+	     })
+	 },
+	 
+	 apiGetUserData: function () {
+	     axios.get("/api/user/").then((response) => {
+		 console.log(response)
+		 if (response.status == 200) {
+		     this._gardens = response.data.gardens;
+		 }
+	     })
+	 },
+	 sendNewGarden: function () {
+	     console.log("hello")
+	 },
+	 sendEditGarden: function () {
+	     console.log("hello")
+	 },
+     },
 
-})
+ })
 </script>

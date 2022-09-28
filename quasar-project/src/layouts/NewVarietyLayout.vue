@@ -34,10 +34,10 @@
 	    <h3>Edit Variety</h3>
 	    <br/>
 
-	    <q-select rounded outlined v-model="_plantId" :options="_plants" emit-value label="Plant Name" />
+	    <q-select rounded outlined v-model="_plantId" @update:model-value="val => apiGetVarietyData(val)" :options="_plants" emit-value label="Plant Name" />
 	    <br/>
 
-	    <q-select rounded outlined v-model="_plantId" :options="_apiGetVarietyData(_plantId)" emit-value label="Variety Name" />
+	    <q-select rounded outlined v-model="_editVariety" :options="_varietys" emit-value label="Variety Name" />
 	    <br/>
 
 	    <q-input rounded outlined v-model="_varietyName" label=" Updated Variety Name" />
@@ -58,7 +58,7 @@
 	<div v-else>
 	    <h3>Varieties</h3>
 	    <br/>
-	    <q-select rounded outlined v-model="_plantId" :options="_plants" emit-value label="Plant Name" />
+	    <q-select rounded outlined v-model="_plantId" @update:model-value="val => apiGetVarietyData(val)" :options="_plants" emit-value label="Plant Name" />
 	    <br/>
 	    <div v-for="vv in _varietys" class="q-pa-md">
 		<q-list dense bordered padding class="rounded-borders">
@@ -76,7 +76,7 @@
 
 		    <q-separator spaced inset />
 		</q-list>
-	    </div>
+		    </div>
 	</div>
 	<div v-if="_alert == true">
 	    <q-dialog v-model="_alert">
@@ -116,6 +116,7 @@
 	     _message: null,
 	     _plants: [],
 	     _plantId: null,
+	     _editVariety: null,
 	     _varietyName: null,
 	     _varietyDescription: null,
 	     _varietyInfoUrl: null
@@ -139,7 +140,7 @@
 	     this.varietyTrack = "list"
 	 },
 	 apiGetVarietyData: function (given_plant_id) {
-	     axios.get(`/api/varietys/plant_id=${given_plant_id}`).then((response) => {
+	     axios.get(`/api/varietys/?plant_id=${given_plant_id}`).then((response) => {
 		 this._varietys = response.data.varietys 
 	     })
 	 },
