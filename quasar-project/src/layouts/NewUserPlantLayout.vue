@@ -5,21 +5,30 @@
 	  <div>
 	      <h3>Add New Plant</h3><br/>
 	      
-	      <q-input rounded outlined v-model="_plantName" label="Plant Name" />
+	      <q-input rounded outlined v-model="_userPlantName" label="Plant Name" />
 	      <br/>
 
 	      <q-input
-		  v-model="_plantDescription"
-			   filled
+		  v-model="_userPlantDescription"
+		  filled
 		  autogrow
 		  label="Description"
 	      />
 	      <br/>
+	      <q-select rounded outlined v-model="_userPlantGarden" :options="_gardens" emit-value label="Garden" /><br/>
 	      
-	      <q-input rounded outlined v-model="_plantInfoUrl" label="Plant Info Url" />
-	      <br/>
 	      
-	      <q-btn @click="sendNewPlant" color="white" text-color="black" label="Add Plant" />
+	      <q-item v-for="md in metadataFieldLength" :key="md">
+		  <div>
+		      <q-input rounded outlined v-model.string="metadataFields[md].name" label="Name" /><br/>
+		      <q-input filled autogrow v-model.string="metadataFields[md].description" label="description" /><br/>
+		      <q-select rounded outlined v-model.string="metadataFields[md].dataType" :options="_dataTypes" label="DataType" /><br/>
+		      <q-btn  @click="addMetaDataField" color="white" text-color="black" label="Add Extra DataField" />
+		  </div>
+	      </q-item>
+
+	      
+	      <q-btn @click="sendNewUserPlant" color="white" text-color="black" label="Add Plant" />
 
 	  </div>
 	  <div>
@@ -50,18 +59,38 @@
 
 <script>
  import { defineComponent, ref } from 'vue'
-
+ import axios from 'axios'
+ 
  export default defineComponent({
-     name: 'NewUserLayout',
+     name: 'NewUserPlantLayout',
      data: () => {
 	 return {
 	     _alert: null,
 	     userplantTrack: null,
+	     _userPlantName: null,
+	     _userPlantGarden: null,
+	     _userPlantDescription: null,
 	     _message: null,
+	     metadataFields: [],
+	     metadataFieldLength: null,
+	     _dataTypes: null,
 	 };
      },
      created() {
+	 this._dataTypes = [
+	     "bool",
+	     "int",
+	     "text",
+	     "textarea",
+	 ];
 	 this.apiCheckLogin();
+	 this.metadataFieldLength = 0;
+	 this.addMetaDataField();
+	 this.metadataFields.push({
+	     "name": "",
+	     "dataType": "",
+	     "description": "",
+	 })
 	 this._alert = false;
 	 this.apiGetUserData();
 	 this.userplantTrack = "list";
@@ -88,7 +117,14 @@
 		 }
 	     })
 	 },
-	 
+	 addMetaDataField: function() {
+	     this.metadataFieldLength = this.metadataFieldLength + 1;
+	     this.metadataFields.push({
+		 "name": "",
+		 "dataType": "",
+		 "description": "",
+	     })
+	 },
 	 apiGetUserData: function () {
 	     axios.get("/api/user/").then((response) => {
 		 console.log(response)
@@ -97,8 +133,26 @@
 		 }
 	     })
 	 },
-	 sendNewGarden: function () {
-	     console.log("hello")
+	 sendNewUserPlant: function () {
+	     let date = new Date();
+	     let dateString = String(((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear())
+	     let sendData = {
+		 "user_id": 1,
+		 "plant_id": 2,
+		 "variety_id": 2,
+		 "garden_id": this._userPlantGarden,
+		 "date": dateString,
+		 "name": this._userPlantName,
+		 "description": this._userPlantDescription,
+		 "metadata": this.metadataFields//.shift()
+	     };
+	     
+	     axios.post("/api/userplant/new",sendData).then((response) => {
+		 console.log(response)
+		 if (response.status == 200) {
+		     this._alert = "save Successful"
+		 }
+	     })
 	 },
 	 sendEditGarden: function () {
 	     console.log("hello")

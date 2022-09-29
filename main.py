@@ -87,16 +87,13 @@ def create_user():
     if username_taken[0] != 0:
         return jsonify({"status": 500, "message": "Username already exsists"})
     else:
-        # try:
-        adb.cur.execute("INSERT INTO users (username, password) VALUES (?,?)",(decoded_json["username"],decoded_json["password"]))
-        adb.con.commit()
-        # except:
-        
-        # return jsonify({"status": 500, "message": "Error adding user"})
+        try:
+            adb.cur.execute("INSERT INTO users (username, password) VALUES (?,?)",(decoded_json["username"],decoded_json["password"]))
+            adb.con.commit()
+        except:
+            return jsonify({"status": 500, "message": "Error adding user"})
         return jsonify({"status": 200, "message": "User Created"})
         
-    #this is where you will make a user 
-    # return render_template("create.html",create_form=create_form)
 
 
 @app.route('/api/login/', methods=['GET', 'POST'])
@@ -117,13 +114,10 @@ def login_page():
             print(instance)
             login_user(instance)
             return jsonify({"status": 200, "auth": f""})
-            # return redirect("/home/")
         else:
             return jsonify({"status": 500})
-            # return render_template("login.html",login_form=login_form)
     else:
         return jsonify({"status": 500})
-        # return render_template("login.html",login_form=login_form)
 
 
    
@@ -137,8 +131,7 @@ def api_harvest():
     # TODO add jwt auth
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
-    # try:
-    if True:
+    try:
         for item in decoded_json["harvested"]:
             # TODO fix sql injectsion
             if item['userplant_id'] != 0:
@@ -147,8 +140,8 @@ def api_harvest():
             adb.cur.execute(f"INSERT into harvests (user_id, plant_id, userplant_id, garden_id, harvested_at, quantity, pound, ounce, notes) VALUES ({decoded_json['user_id']},{item['plant_id']},{item['userplant_id']},{item['garden_id']},'{decoded_json['date']}',{item['pound']},{item['quantity'] if item['quantity'] is not None else 'null' },{item['ounce']},'{item['notes']}')")
         adb.con.commit()
 
-    # except:
-    #     return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
+    except:
+        return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
     return jsonify({"status": 200, "message": "Saved Harvest Successfully!"})
 
 
@@ -200,13 +193,15 @@ def api_new_user_plant():
     # TODO add jwt auth
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
-    try:
+    # try:
+    print("metadata\n", str(decoded_json['metadata']))
+    if True:
         #TODO add metadata to insert/ fix inject/ quote problems
-        adb.cur.execute(f"INSERT into user_plants (user_id, plant_id, variety_id, garden_id, created_at, updated_at, name, description) VALUES ({decoded_json['user_id']},{decoded_json['plant_id']},{decoded_json['variety_id']},{decoded_json['garden_id']},'{decoded_json['date']}','{decoded_json['date']}','{decoded_json['name']}','{decoded_json['description']}')")
+        adb.cur.execute("INSERT into user_plants (user_id, plant_id, variety_id, garden_id, created_at, updated_at, name, description, metadata) VALUES (?,?,?,?,?,?,?,?,?)",(decoded_json['user_id'],decoded_json['plant_id'],decoded_json['variety_id'],decoded_json['garden_id'],decoded_json['date'],decoded_json['date'],decoded_json['name'],decoded_json['description'],str(decoded_json['metadata'])))
         adb.con.commit()
 
-    except:
-        return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
+    # except:
+        # return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
     return jsonify({"status": 200, "message": "Saved Plant Successfully!"})
 
 
