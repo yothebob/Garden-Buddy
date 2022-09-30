@@ -149,12 +149,13 @@ def api_harvest():
 def api_new_plant():
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
-    try:
-        adb.cur.execute(f"INSERT into plants (name, description, info_url) VALUES (?,?,?)",(decoded_json['name'],decoded_json['description'],decoded_json['info_url']))
+    # try:
+    if True:
+        adb.cur.execute(f"INSERT into plants (name, description, info_url, foot_size) VALUES (?,?,?,?)",(decoded_json['name'],decoded_json['description'],decoded_json['info_url'],decoded_json['foot_size']))
 
         adb.con.commit()
-    except:
-        return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
+    # except:
+        # return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
     return jsonify({"status": 200, "message": "Saved Plant Successfully!"})
 
 
@@ -163,7 +164,7 @@ def api_new_variety():
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
     try:
-        adb.cur.execute(f"INSERT into varietys (plant_id, name, description, info_url) VALUES ({decoded_json['plant_id']},'{decoded_json['name']}','{decoded_json['description']}','{decoded_json['info_url']}')")
+        adb.cur.execute(f"INSERT into varietys (plant_id, name, description, info_url) VALUES (?,?,?,?)",(decoded_json['plant_id'],decoded_json['name'],decoded_json['description'],decoded_json['info_url']))
         adb.con.commit()
 
     except:
@@ -178,8 +179,7 @@ def api_new_garden():
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
     try:
-        #TODO metadata wont work for now, need to fix the sql injection or quote problems 
-        adb.cur.execute(f"INSERT into user_gardens (user_id, created_at, updated_at, name, description, layout) VALUES ({decoded_json['user_id']},'{decoded_json['date']}','{decoded_json['date']}','{decoded_json['name']}','{decoded_json['description']}','{decoded_json['layout']}')")
+        adb.cur.execute("INSERT into user_gardens (user_id, created_at, updated_at, name, description, layout, metadata) VALUES (?,?,?,?,?,?,?)" ,(decoded_json['user_id'],decoded_json['date'],decoded_json['date'],decoded_json['name'],decoded_json['description'],decoded_json['layout'], decoded_json['metadata']))
         adb.con.commit()
 
     except:
@@ -193,15 +193,13 @@ def api_new_user_plant():
     # TODO add jwt auth
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
-    # try:
-    print("metadata\n", str(decoded_json['metadata']))
-    if True:
-        #TODO add metadata to insert/ fix inject/ quote problems
-        adb.cur.execute("INSERT into user_plants (user_id, plant_id, variety_id, garden_id, created_at, updated_at, name, description, metadata) VALUES (?,?,?,?,?,?,?,?,?)",(decoded_json['user_id'],decoded_json['plant_id'],decoded_json['variety_id'],decoded_json['garden_id'],decoded_json['date'],decoded_json['date'],decoded_json['name'],decoded_json['description'],str(decoded_json['metadata'])))
+    try:
+    # if True:
+        adb.cur.execute("INSERT into user_plants (user_id, plant_id, variety_id, garden_id, created_at, updated_at, name, description, foot_size ,metadata) VALUES (?,?,?,?,?,?,?,?,?,?)",(decoded_json['user_id'],decoded_json['plant_id'],decoded_json['variety_id'],decoded_json['garden_id'],decoded_json['date'],decoded_json['date'],decoded_json['name'],decoded_json['description'],str(decoded_json['metadata']),str(decoded_json['foot_size'])))
         adb.con.commit()
 
-    # except:
-        # return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
+    except:
+        return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
     return jsonify({"status": 200, "message": "Saved Plant Successfully!"})
 
 
@@ -284,12 +282,12 @@ def api_user_serializer():
     if user_id is None:
         return jsonify({"status": 500, "message": "No user supplied"})
     else:
-        user_fields = adb.cur.execute(f"select name,username from users where rowid={user_id}").fetchone()
-        garden_fields = adb.cur.execute(f"select rowid ,name, description, layout, metadata from user_gardens where user_id={user_id}").fetchall()
-        userplant_fields = adb.cur.execute(f"select rowid, plant_id, variety_id, garden_id, name, description, metadata from user_plants where user_id={user_id}").fetchall()
+        user_fields = adb.cur.execute("select name,username from users where rowid=?",(user_id,)).fetchone()
+        garden_fields = adb.cur.execute(f"select rowid ,name, description, layout, metadata from user_gardens where user_id=?",(user_id,)).fetchall()
+        userplant_fields = adb.cur.execute(f"select rowid, plant_id, variety_id, garden_id, name, description, foot_size, metadata from user_plants where user_id=?",(user_id,)).fetchall()
 
         garden_titles = ["value" ,"label", "description", "layout", "metadata"]
-        userplant_titles = ["value", "plant_id", "variety_id", "garden_id", "label", "description", "metadata"]
+        userplant_titles = ["value", "plant_id", "variety_id", "garden_id", "label", "description", "foot_size", "metadata"]
         
         serialized["user_id"] = user_id
         serialized["name"] = user_fields[0]
@@ -328,7 +326,7 @@ def api_harvest_serializer():
     from harvests as h
     INNER JOIN plants as p ON h.plant_id = p.rowid
     INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
-    WHERE h.user_id = {}""".format(user_id)
+    WHERE h.user_id = {} ORDER BY h.rowid DESC""".format(user_id)
     query_harvests = adb.cur.execute(q_string).fetchall()
 
     # maybe here do another sql command and loop through data to add a user plant??
@@ -357,7 +355,7 @@ def api_variety_serializer():
         serialized = {}
         serialized["plant_id"] = plant_id
         variety_titles = ["value", "label", "description", "info_url"]
-        query_varietys = adb.cur.execute(f"SELECT rowid, name, description, info_url from varietys WHERE plant_id={plant_id}").fetchall()
+        query_varietys = adb.cur.execute(f"SELECT rowid, name, description, info_url from varietys WHERE plant_id=?",(plant_id,)).fetchall()
 
         serialized["varietys"] = [{variety_titles[i] : variety[i] for i in range(len(variety_titles))} for variety in query_varietys]
         return jsonify(serialized)

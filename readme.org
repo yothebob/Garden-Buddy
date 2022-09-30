@@ -59,41 +59,43 @@ NOTE:
 this uses a url param EX: ?user_id=1
 This NEEDS jwt auth for using 
 #+BEGIN_SRC javascript
-{
-  "user_id": 1,
-  "name": "Brandon",
-  "username": "Brandon",
-  "gardens": [
   {
-  "garden_id": 1,
-  "name": "Backyard Window Garden",
-  "description": "This is my 2x4 size garden wher ei have buckwheat",
-  "layout": "[[0,0,0,0][0,0,0,0]]",
-  "metadata": "{"0": {"name": "weather", "datatype": "int"}, "1": {"name": "watered", "datatype": "bool"}}"
+    "user_id": 1,
+    "name": "Brandon",
+    "username": "Brandon",
+    "gardens": [
+    {
+    "garden_id": 1,
+    "name": "Backyard Window Garden",
+    "description": "This is my 2x4 size garden wher ei have buckwheat",
+    "layout": "[[0,0,0,0][0,0,0,0]]",
+    "metadata": "[{'name': '', 'dataType': '', 'description': ''}, {'name': 'water', 'dataType': 'int', 'description': 'inches per week'}]"
+    }
+    ],
+    "user_plants": [
+    {
+    "userplant_id": 1,
+    "plant_id": 1,
+    "variety_id": 1,
+    "garden_id": 1,
+    "name": "My buckwheat",
+    "description": "this is by the house being used to fight weeds",
+    "foot_size": 1,
+    "metadata": "[{'name': '', 'dataType': '', 'description': ''}, {'name': 'water', 'dataType': 'int', 'description': 'inches per week'}]"
+     },
+     {
+     "userplant_id": 2,
+     "plant_id": 1,
+     "variety_id": 1,
+     "garden_id": 1,
+     "name": "My buckwheat 2",
+     "description": "this is by the house being used to fight weeds",
+     "foot_size": 1,
+     "metadata": "[{'name': '', 'dataType': '', 'description': ''}, {'name': 'water', 'dataType': 'int', 'description': 'inches per week'}]"
+     }
+    ],
+
   }
-  ],
-  "user_plants": [
-  {
-  "userplant_id": 1,
-  "plant_id": 1,
-  "variety_id": 1,
-  "garden_id": 1,
-  "name": "My buckwheat",
-  "description": "this is by the house being used to fight weeds",
-  "metadata": "{"0": {"name": "weather", "datatype": "int"}, "1": {"name": "watered", "datatype": "bool"}}"
-   },
-   {
-   "userplant_id": 2,
-   "plant_id": 1,
-   "variety_id": 1,
-   "garden_id": 1,
-   "name": "My buckwheat 2",
-   "description": "this is by the house being used to fight weeds",
-   "metadata": "{"0": {"name": "weather", "datatype": "int"}, "1": {"name": "watered", "datatype": "bool"}}"
-   }
-  ],
-  
-}
 #+END_SRC 
 *** /api/plants/:
 #+BEGIN_SRC javascript
@@ -195,7 +197,8 @@ need to be logged in (and eventually jwt)
   {
     "name": "Green Beans",
     "description": "immature beans, in bush and pole variety.", 
-    "info_url": "www.google.com" 
+    "info_url": "www.google.com",
+    "foot_size": "1",
   }
 #+END_SRC 
 *** /api/variety/new:
@@ -222,17 +225,17 @@ need to be logged in (and eventually jwt)
 
 *** /api/userplant/new:
 #+BEGIN_SRC javascript
-{
- "user_id": 1,
- "plant_id": 2,
- "variety_id": 2,
- "garden_id": 1,
- "date": "09/07/2022",
- "name": "My buckwheat",
- "description": "this is by the house being used to fight weeds",
- "metadata": "{'0': {'name': 'weather', 'datatype': 'int'}, '1': {'name': 'watered', 'datatype': 'bool'}}" // list of json objects that will be rendered
-// in front end but saved as json blobs
-}
+  {
+   "user_id": 1,
+   "plant_id": 2,
+   "variety_id": 2,
+   "garden_id": 1,
+   "foot_size": 1,
+   "date": "09/07/2022",
+   "name": "My buckwheat",
+   "description": "this is by the house being used to fight weeds",
+   "metadata": "[{'name': '', 'dataType': '', 'description': ''}, {'name': 'water', 'dataType': 'int', 'description': 'inches per week'}]"
+  }
 #+END_SRC 
 
 ** Update Calls

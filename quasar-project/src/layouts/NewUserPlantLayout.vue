@@ -7,6 +7,8 @@
 	      
 	      <q-input rounded outlined v-model="_userPlantName" label="Plant Name" />
 	      <br/>
+	      <q-input rounded outlined v-model="_userPlantFootSize" label="Foot Size (1x1 == 1)" />
+	      <br/>
 
 	      <q-input
 		  v-model="_userPlantDescription"
@@ -68,6 +70,7 @@
 	     _alert: null,
 	     userplantTrack: null,
 	     _userPlantName: null,
+	     _userPlantFootSize: null,
 	     _userPlantGarden: null,
 	     _userPlantDescription: null,
 	     _message: null,
@@ -136,6 +139,7 @@
 	 sendNewUserPlant: function () {
 	     let date = new Date();
 	     let dateString = String(((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear())
+	     let sendMetadata = this.metadataFields.shift()
 	     let sendData = {
 		 "user_id": 1,
 		 "plant_id": 2,
@@ -143,14 +147,16 @@
 		 "garden_id": this._userPlantGarden,
 		 "date": dateString,
 		 "name": this._userPlantName,
+		 "foot_size": this._userPlantFootSize,
 		 "description": this._userPlantDescription,
-		 "metadata": this.metadataFields//.shift()
+		 "metadata": sendMetadata
 	     };
 	     
 	     axios.post("/api/userplant/new",sendData).then((response) => {
 		 console.log(response)
 		 if (response.status == 200) {
-		     this._alert = "save Successful"
+		     this._alert = true;
+		     this._message = response.data.message
 		 }
 	     })
 	 },

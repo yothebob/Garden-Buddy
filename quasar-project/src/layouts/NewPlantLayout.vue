@@ -45,6 +45,9 @@
 		
 		<q-input rounded outlined v-model="_plantInfoUrl" label="Plant Info Url" />
 		<br/>
+
+		<q-input rounded outlined v-model="_plantFootSize" label="Plant Foot Size" />
+		<br/>
 		
 		<q-btn @click="sendNewPlant" color="white" text-color="black" label="Add Plant" />
 		
@@ -64,6 +67,9 @@
 		<br/>
 		
 		<q-input rounded outlined v-model="_plantInfoUrl" label="Plant Info Url" />
+		<br/>
+
+		<q-input rounded outlined v-model="_plantFootSize" label="Plant Foot Size" />
 		<br/>
 		
 		<q-btn @click="sendNewPlant" color="white" text-color="black" label="Add Plant" />
@@ -105,6 +111,7 @@
 
      data: () => {
 	 return {
+	     _plantFootSize: null,
 	     plantTrack: null,
 	     _plants: null,
 	     _alert: null,
@@ -148,7 +155,8 @@
 	     let _newPlantdata = {
 		 "name": this._plantName,
 		 "description": this._plantDescription, 
-		 "info_url": this._plantInfoUrl 
+		 "info_url": this._plantInfoUrl,
+		 "foot_size": this._plantFootSize
 	     };
 	     
 	     axios.post(`/api/plant/new`, _newPlantdata).then((response) => {
