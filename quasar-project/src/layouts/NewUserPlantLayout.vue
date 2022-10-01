@@ -149,7 +149,7 @@
 		 "name": this._userPlantName,
 		 "foot_size": this._userPlantFootSize,
 		 "description": this._userPlantDescription,
-		 "metadata": sendMetadata
+		 "metadata": this.metadataFields
 	     };
 	     
 	     axios.post("/api/userplant/new",sendData).then((response) => {

@@ -193,13 +193,13 @@ def api_new_user_plant():
     # TODO add jwt auth
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
-    try:
-    # if True:
+    # try:
+    if True:
         adb.cur.execute("INSERT into user_plants (user_id, plant_id, variety_id, garden_id, created_at, updated_at, name, description, foot_size ,metadata) VALUES (?,?,?,?,?,?,?,?,?,?)",(decoded_json['user_id'],decoded_json['plant_id'],decoded_json['variety_id'],decoded_json['garden_id'],decoded_json['date'],decoded_json['date'],decoded_json['name'],decoded_json['description'],str(decoded_json['metadata']),str(decoded_json['foot_size'])))
         adb.con.commit()
 
-    except:
-        return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
+    # except:
+    #     return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
     return jsonify({"status": 200, "message": "Saved Plant Successfully!"})
 
 
