@@ -137,7 +137,7 @@ def api_harvest():
             if item['userplant_id'] != 0:
                 item['plant_id'] = adb.cur.execute("SELECT plant_id FROM user_plants WHERE rowid=?",(item['userplant_id'],)).fetchone()[0]
             
-            adb.cur.execute(f"INSERT into harvests (user_id, plant_id, userplant_id, garden_id, harvested_at, quantity, pound, ounce, notes) VALUES ({decoded_json['user_id']},{item['plant_id']},{item['userplant_id']},{item['garden_id']},'{decoded_json['date']}',{item['pound']},{item['quantity'] if item['quantity'] is not None else 'null' },{item['ounce']},'{item['notes']}')")
+            adb.cur.execute("INSERT into harvests (user_id, plant_id, userplant_id, garden_id, harvested_at, quantity, pound, ounce, notes, metadata) VALUES (?,?,?,?,?,?,?,?,?,?)",(decoded_json['user_id'],item['plant_id'],item['userplant_id'],item['garden_id'],decoded_json['date'],item['pound'],(item['quantity'] if item['quantity'] is not None else 'null'),item['ounce'],item['notes'],str(item['metadata'])))
         adb.con.commit()
 
     except:
@@ -287,7 +287,7 @@ def api_user_serializer():
         userplant_fields = adb.cur.execute(f"select rowid, plant_id, variety_id, garden_id, name, description, foot_size, metadata from user_plants where user_id=?",(user_id,)).fetchall()
 
         garden_titles = ["value" ,"label", "description", "layout", "metadata"]
-        userplant_titles = ["value", "plant_id", "variety_id", "garden_id", "label", "description", "foot_size", "metadata"]
+        userplant_titles = ["value", "plant_id", "variety_id", "garden_id", "label", "description", "metadata", "foot_size"]
         
         serialized["user_id"] = user_id
         serialized["name"] = user_fields[0]

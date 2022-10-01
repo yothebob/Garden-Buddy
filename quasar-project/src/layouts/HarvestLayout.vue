@@ -18,8 +18,17 @@
 			    <br/>
 			</div>
 			<div v-else >
-			    <q-select rounded outlined v-model.number="_harvestedPlants[hp].userplant_id" :options="_userPlants" emit-value label="Tracked Plant Name" />
+			    <q-select rounded outlined v-model.number="_harvestedPlants[hp].userplant_id" @update:model-value="showPlantMetadata(_harvestedPlants[hp].userplant_id, hp)" :options="_userPlants" emit-value label="Tracked Plant Name" />
 			    <br/>
+			</div>
+
+			<div v-if="_userPlantMetadataLength > 0">
+			    <h5>Meta Data for {{_harvestedPlants[hp].userplant_id}}</h5>
+			    <q-item v-for="md in _userPlantMetadataLength" :key="md">
+				<q-input rounded outlined v-model.number="_harvestedPlants[hp].metadata[(md-1)].value" :label="_harvestedPlants[hp].metadata[(md -1)].name" /><br/>
+				<div>{{_harvestMetadata.userPlantMetadata[(md -1)].description}}</div>
+			    </q-item>
+			    
 			</div>
 			
 			<q-select rounded outlined v-model.number="_harvestedPlants[hp].garden_id" :options="_gardens" emit-value label="Which Garden?" /><br/>
@@ -103,6 +112,8 @@
      name: 'HarvestLayout',
      data: () => {
 	 return {
+	     "_harvestMetadata": null,
+	     "_userPlantMetadataLength": null,
 	     "_alert": null,
 	     "_message": null,
 	     "_userData": null,
@@ -115,6 +126,9 @@
 	 };
      },
      created() {
+	 this._harvestMetadata = {
+	     userPlantMetadata: []
+	 }
 	 this.apiCheckLogin();
 	 this.totalHarvestedPlants = 0;
 	 this.AnotherHarvestedPlant();
@@ -127,7 +141,7 @@
 	     "pound": 0,
 	     "ounce": 0,
 	     "notes": "",
-	     "metadata": ""
+	     "metadata": []
 	 })
 
 	 this.apiGetPlantData();
@@ -135,6 +149,13 @@
 	 console.log("harvestedplants", this._harvestedPlants)
      },
      methods: {
+	 showPlantMetadata: function (userPlantId, index) {
+	     let harvestDataMetadata = this._harvestedPlants[index]
+	     let selectedUserPlant  = this._userPlants[(userPlantId -1)]
+	     this._harvestMetadata.userPlantMetadata = JSON.parse((selectedUserPlant.metadata).replaceAll("'",'"'))
+	     harvestDataMetadata.metadata = this._harvestMetadata.userPlantMetadata
+	     this._userPlantMetadataLength = this._harvestMetadata.userPlantMetadata.length
+	 },
 	 apiCheckLogin: function () {
 	     axios.get("/api/who-am-i/").then((response) => {
 		 console.log(response)
