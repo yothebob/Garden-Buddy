@@ -1,5 +1,6 @@
 import json
 import base64
+import csv
 
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
@@ -360,6 +361,28 @@ def api_variety_serializer():
         serialized["varietys"] = [{variety_titles[i] : variety[i] for i in range(len(variety_titles))} for variety in query_varietys]
         return jsonify(serialized)
 
-    
+
+@login_required    
+@app.route("/api/export_data/", methods=["GET"])
+def api_variety_serializer():
+    if current_user.is_anonymous == True:
+        return jsonify({"status": 500, "message": "Not Authorized"})
+
+    user_id = current_user.id
+    if user_id is None:
+        return jsonify({"status": 500, "message": "No user supplied"})
+    export_type = request.args.get("export_type", None)
+    export_type = "csv"
+
+    harvest_data_dump = adb.cur.execute(f"SELECT * from harvests WHERE user_id=?",(user_id,)).fetchall()
+    #todo dump userplant data and garden data
+    if export_type == "csv":
+        with open("harvest_dump.csv", "w") as cf:
+            csvfile = csv.writer(cf)
+            [cf.writerow(line) for line in harvest_data_dump]
+        return cf
+    elif export_type == "ui":
+        pass # get data for front end 
+    serialized["varietys"] = [{variety_titles[i] : variety[i] for i in range(len(variety_titles))} for variety in query_varietys]
 # if __name__ == "__main__":
 #     app.run()

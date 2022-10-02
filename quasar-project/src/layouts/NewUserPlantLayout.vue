@@ -19,7 +19,7 @@
 	      <br/>
 	      <q-select rounded outlined v-model="_userPlantGarden" :options="_gardens" emit-value label="Garden" /><br/>
 	      
-	      
+	      <h5>Metadata</h5>
 	      <q-item v-for="md in metadataFieldLength" :key="md">
 		  <div>
 		      <q-input rounded outlined v-model.string="metadataFields[md].name" label="Name" /><br/>

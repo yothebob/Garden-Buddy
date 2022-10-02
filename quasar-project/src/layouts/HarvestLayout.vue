@@ -22,15 +22,39 @@
 			    <br/>
 			</div>
 
-			<div v-if="_userPlantMetadataLength > 0">
-			    <h5>Meta Data for {{_harvestedPlants[hp].userplant_id}}</h5>
+			<div v-if="_userPlantMetadataLength > 0" style="display:inline-block;">
+			    <h5>Meta Data for {{_userPlants[(_harvestedPlants[hp].userplant_id -1)].label}}</h5>
+			    <div  style="width:50%;">
 			    <q-item v-for="md in _userPlantMetadataLength" :key="md">
-				<q-input rounded outlined v-model.number="_harvestedPlants[hp].metadata[(md-1)].value" :label="_harvestedPlants[hp].metadata[(md -1)].name" /><br/>
-				<div>{{_harvestMetadata.userPlantMetadata[(md -1)].description}}</div>
+				<div>{{_harvestedPlants[hp].metadata[(md-1)].description}}</div><br/>
+
+				<div v-if="_harvestedPlants[hp].metadata[(md-1)].dataType == 'bool'">
+				    <q-radio v-model.string="_harvestedPlants[hp].metadata[(md-1)].value"
+					     checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
+					     :label="_harvestedPlants[hp].metadata[(md -1)].name" /><br/>
+				</div>
+				<div v-else-if="_harvestedPlants[hp].metadata[(md-1)].dataType == 'int'">
+				    <q-input rounded outlined
+					     v-model.string="_harvestedPlants[hp].metadata[(md-1)].value"
+					     :label="_harvestedPlants[hp].metadata[(md -1)].name" /><br/>
+				</div>
+				<div v-else-if="_harvestedPlants[hp].metadata[(md-1)].dataType == 'textarea'">
+				    <q-input rounded outlined
+					     filled
+					     autogrow
+					     v-model.string="_harvestedPlants[hp].metadata[(md-1)].value"
+					     :label="_harvestedPlants[hp].metadata[(md -1)].name" /><br/>
+				</div>
+				<div v-else>
+				    <q-input rounded outlined
+					     v-model.string="_harvestedPlants[hp].metadata[(md-1)].value"
+					     :label="_harvestedPlants[hp].metadata[(md -1)].name" /><br/>
+				</div>
 			    </q-item>
-			    
+			    <br/>
 			</div>
-			
+
+			</div>
 			<q-select rounded outlined v-model.number="_harvestedPlants[hp].garden_id" :options="_gardens" emit-value label="Which Garden?" /><br/>
 			<q-input rounded outlined v-model.number="_harvestedPlants[hp].quantity" label="Quantity" /><br/>
 			<q-input rounded outlined v-model.number="_harvestedPlants[hp].pound" label="Pound" /><br/>
@@ -112,7 +136,6 @@
      name: 'HarvestLayout',
      data: () => {
 	 return {
-	     "_harvestMetadata": null,
 	     "_userPlantMetadataLength": null,
 	     "_alert": null,
 	     "_message": null,
@@ -126,9 +149,6 @@
 	 };
      },
      created() {
-	 this._harvestMetadata = {
-	     userPlantMetadata: []
-	 }
 	 this.apiCheckLogin();
 	 this.totalHarvestedPlants = 0;
 	 this.AnotherHarvestedPlant();
@@ -152,9 +172,8 @@
 	 showPlantMetadata: function (userPlantId, index) {
 	     let harvestDataMetadata = this._harvestedPlants[index]
 	     let selectedUserPlant  = this._userPlants[(userPlantId -1)]
-	     this._harvestMetadata.userPlantMetadata = JSON.parse((selectedUserPlant.metadata).replaceAll("'",'"'))
-	     harvestDataMetadata.metadata = this._harvestMetadata.userPlantMetadata
-	     this._userPlantMetadataLength = this._harvestMetadata.userPlantMetadata.length
+	     harvestDataMetadata.metadata = JSON.parse((selectedUserPlant.metadata).replaceAll("'",'"'))
+	     this._userPlantMetadataLength = harvestDataMetadata.metadata.length
 	 },
 	 apiCheckLogin: function () {
 	     axios.get("/api/who-am-i/").then((response) => {
