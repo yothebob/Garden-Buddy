@@ -364,7 +364,7 @@ def api_variety_serializer():
 
 @login_required    
 @app.route("/api/export_data/", methods=["GET"])
-def api_variety_serializer():
+def api_export_data():
     if current_user.is_anonymous == True:
         return jsonify({"status": 500, "message": "Not Authorized"})
 
@@ -384,5 +384,7 @@ def api_variety_serializer():
     elif export_type == "ui":
         pass # get data for front end 
     serialized["varietys"] = [{variety_titles[i] : variety[i] for i in range(len(variety_titles))} for variety in query_varietys]
-# if __name__ == "__main__":
+
+
+    # if __name__ == "__main__":
 #     app.run()

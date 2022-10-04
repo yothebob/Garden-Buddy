@@ -18,8 +18,11 @@
 		   <div class="message" v-if="_message != null"> {{_message}} </div>
 
 		   <q-btn @click="createUser" color="white" text-color="black" label="Create user" />
-			</div>
+	</div>
+	<div style="padding:10px;"><p>Allready a user? <a href="/login/">Click here.</a></p></div>
+	
 	  </div>
+	  
 	  <router-view />
     </q-page-container>
   </q-layout>

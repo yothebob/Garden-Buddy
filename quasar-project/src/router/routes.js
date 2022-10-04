@@ -2,82 +2,58 @@
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') }
     ]
   },
   {
     path: '/login/',
-    component: () => import('layouts/LoginLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '', component: () => import('pages/LoginPage.vue') }
     ]
   },
   {
     path: '/create/',
-    component: () => import('layouts/CreateUserLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '', component: () => import('pages/CreateUserPage.vue') }
     ]
   },
   {
     path: '/home/',
-    component: () => import('layouts/HomeLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '', component: () => import('pages/HomePage.vue') }
     ]
   },
 
   {
     path: '/garden/new/',
-    component: () => import('layouts/NewGardenLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '', component: () => import('pages/NewGardenPage.vue') }
     ]
   },
 
   {
     path: '/harvest/new/',
-    component: () => import('layouts/HarvestLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '', component: () => import('pages/HarvestPage.vue') }
     ]
   },
   {
     path: '/plant/new/',
-    component: () => import('layouts/NewPlantLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '', component: () => import('pages/NewPlantPage.vue') }
     ]
   },
   {
     path: '/variety/new/',
-    component: () => import('layouts/NewVarietyLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '', component: () => import('pages/NewVarietyPage.vue') }
     ]
   },
   {
     path: '/userplant/new/',
-    component: () => import('layouts/NewUserPlantLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
-    ]
-  },
-// UPDATES
-  {
-    path: '/garden/new/',
-    component: () => import('layouts/UpdateGardenLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
-    ]
-  },
-  {
-    path: '/userplant/new/',
-    component: () => import('layouts/UpdateUserPlantLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: '', component: () => import('pages/NewUserPlantPage.vue') }
     ]
   },
 

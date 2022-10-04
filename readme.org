@@ -1,5 +1,3 @@
-
-
 #+TITLE: Garden Tracker
 #+AUTHOR: Brandon  Brodrick
 
@@ -296,21 +294,28 @@ need to be logged in (and eventually jwt)
 #+END_SRC 
 
 * TODO plans
-yeah.. I am not really liking sqlite for this... I think I will transfer it over to another database style... 
+*** TODO Backend
+**** TODO fix sql injection
+**** TODO fix possible account security, login/ create, limit api calls
+**** TODO need to add jwt,
+**** TODO user_token
+**** TODO user_garden metadata
+**** TODO plant foot_size
+**** TODO variety foot_size
+**** TODO add list metadata for plants("icon": "star", "label": "high Yeilder")
+**** TODO add favorites?
+**** TODO add csv data dump
+**** TODO mathplotlib graph generation
+**** TODO update homepage query to try to get userplant_id if possible
+**** TODO add/fix edit calls
+*** TODO Front end
+**** TODO fix quasar navbar (global)
+**** TODO add garden sq creator/editor
+**** TODO switch layouts to pages
+**** TODO move api calls into one spot api.js
+**** TODO add graph visualation tools
+**** TODO add more data to home page, lbs totals, grand yeild etc
+**** TODO add/list on harvest page
+**** TODO icons for navbar
 
-I am adding migrations (10, 11) for new tables for keeping past updates from user plants and user gardens. this is maybe a bad idea? I think it may be useful
-so i am going to add it now
 
-I eventually want to transition this to a go backend but I just want to get this up and running quickly so I went with flask. 
-
-- OK I think all  the calls work, now I need to create a front end for displaying the data and interacting with it.
-- need to add jwt,
-- fix sql injection 
-- need to add support for new fields
-  - user_token
-  - user_plant metadata
-  - user_garden metadata
-  - user_plant foot_size
-  - plant foot_size
-  - variety foot_size
-     

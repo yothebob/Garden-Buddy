@@ -17,8 +17,10 @@
 	       </q-input>
 
 	       <!-- <input v-model="_password" name="password" type="text" /><br/> -->
-	       <q-btn @click="printme" color="white" text-color="black" label="Login" />
-	       <a href="/create/"> Create User</a>
+	       <q-btn @click="apiLoginUser" color="white" text-color="black" label="Login" />
+	       <div style="padding: 10px;">
+		   <a href="/create/"> Create User</a>
+	       </div>
 	</div>
 	<router-view />
     </q-page-container>
@@ -41,7 +43,7 @@
      components: {
      },
      methods: {
-	 printme: function () {
+	 apiLoginUser: function () {
 	     /* TODO add jwt */
 	     axios.post(`/api/login/?username=${this._username}&password=${this._password}`, {}).then((response) => {
 		 if (response.status === 200) {
