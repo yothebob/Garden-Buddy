@@ -311,7 +311,7 @@ need to be logged in (and eventually jwt)
 *** TODO Front end
 **** TODO fix quasar navbar (global)
 **** TODO add garden sq creator/editor
-**** TODO switch layouts to pages
+**** DONE switch layouts to pages
 **** TODO move api calls into one spot api.js
 **** TODO add graph visualation tools
 **** TODO add more data to home page, lbs totals, grand yeild etc

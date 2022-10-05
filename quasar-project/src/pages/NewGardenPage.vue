@@ -43,6 +43,16 @@
 		      />
 		      <br/>
 		      
+		      <q-input rounded outlined v-model="_gardenHeight"
+			       @update:model-value="UpdateGardenSize()"
+			       label="Garden Width" /><br/>
+		      <q-input rounded outlined v-model="_gardenWidth"
+			       @update:model-value="UpdateGardenSize()"
+			       label="Garden Height" /><br/>
+		      
+
+		      <div id="garden-box"></div>
+
 		      <q-btn @click="sendNewGarden" color="white" text-color="black" label="Add Garden" />
 		      
 		  </div>
@@ -105,15 +115,51 @@
 	     _message: null,
 	     _gardenName: null,
 	     _gardenDescription: null,
+	     _gardenWidth: null,
+	     _gardenHeight: null,
 	 };
      },
      created() {
+	 this._gardenWidth = 0;
+	 this._gardenHeight = 0;
 	 this.apiCheckLogin();
 	 this._alert = false;
 	 this.apiGetUserData();
 	 this.gardenTrack = "list";
      },
      methods: {
+	 createDiv: function (idName, content, insertedBeforeId, tag) {
+	     const newDiv = document.createElement(tag);
+	     if (tag == "div") {
+		 newDiv.innerText = content;
+	     }
+	     const prevDiv = document.getElementById(insertedBeforeId);
+	     document.body.insertBefore(newDiv,prevDiv);
+	 },
+	 UpdateGardenSize: function () {
+	     console.log("running")
+	     console.log(!isNaN(this._gardenWidth))
+	     console.log(!isNaN(this._gardenHeight))
+	     if (!isNaN(this._gardenWidth) && !isNaN(this._gardenHeight)) {
+		 let insertBfore = "garden-box"; 
+		 let idStr = "0__0";
+		 
+		 for (let i = 0; i < this._gardenWidth.length; i++) {
+		     for (let ii = 0; ii < this._gardenHeight.length; ii++) {
+			 insertBfore = idStr
+			 idStr = String(i) + "__" + String(ii);
+			 console.log(idStr)
+			 if (document.getElementById(idStr)) {
+			     console.log("already made", idStr)
+			 } else {
+			     this.createDiv(idStr, "T", insertBfore, "div");			     
+			 }
+		     }
+		     this.createDiv(idStr + "br", "T", insertBfore, "br")
+		 }
+	     }
+	     
+	 },
 	 editGardenTrack: function () {
 	     this.gardenTrack = "edit"
 	 },	 
