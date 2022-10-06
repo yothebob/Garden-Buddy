@@ -53,7 +53,7 @@
 	    
 	    <q-input rounded outlined v-model="_varietyInfoUrl" label="Variety Info Url" />
 	    <br/>
-	    <q-btn @click="sendNewVariety" color="white" text-color="black" label="Add Variety" />
+	    <q-btn @click="updateVariety" color="white" text-color="black" label="Add Variety" />
 	</div>
 	<div v-else>
 	    <h3>Varieties</h3>
@@ -169,16 +169,38 @@
 	     axios.post(`/api/variety/new`, _newVarietyData).then((response) => {
 		 if (response.status === 200) {
 		     console.log(response)
-		     this._message = 'Save Successful.'
+		     this._message = response.data.message
 		     this._alert = true;
 		 } else {
 		     this._alert = true;
-		     this._message = 'Uh Oh Something went wrong!'
+		     this._message = response.data.message
 		 }
 	     }).catch(function (error) {
 		 console.log(error.toJSON());
 		 this._alert = true;
 		 this._message = 'Uh Oh Something went wrong!'
+	     });
+	 },
+	 updateVariety: function () {
+	     let _updateVarietyData = {
+		 "variety_id": this._editVariety,
+		 "name": this._varietyName,
+		 "description": this._varietyDescription, 
+		 "info_url": this._varietyInfoUrl 
+	     };
+	     axios.post(`/api/variety/update`, _updateVarietyData).then((response) => {
+		 if (response.status === 200) {
+		     console.log(response)
+		     this._message = response.data.message
+		     this._alert = true;
+		 } else {
+		     this._alert = true;
+		     this._message = response.data.message
+		 }
+	     }).catch(function (error) {
+		 console.log(error.toJSON());
+		 this._alert = true;
+		 this._message = "Uh Oh Something went wrong!"
 	     });
 	 },
 

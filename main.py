@@ -227,7 +227,7 @@ def api_update_variety():
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
     try:
-        adb.cur.execute(f"UPDATE varietys SET plant_id = {decoded_json['plant_id']}, name = {decoded_json['name']}, description = {decoded_json['description']}, info_url = {decoded_json['info_url']}) WHERE rowid = {decoded_json['variety_id']}")
+        adb.cur.execute("UPDATE varietys SET name = ?, description = ?, info_url = ? WHERE rowid = ?", (decoded_json['name'], decoded_json['description'], decoded_json['info_url'], decoded_json['variety_id']))
         adb.con.commit()
 
     except:
@@ -242,9 +242,8 @@ def api_update_garden():
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
     try:
-        adb.cur.execute(f"UPDATE user_gardens SET plant_id = {decoded_json['plant_id']}, updated_at = '{decoded_json['date']}',name = {decoded_json['name']}, description = {decoded_json['description']}, layout = '{decoded_json['layout']}') WHERE rowid = {decoded_json['garden_id']}")
+        adb.cur.execute("UPDATE user_gardens SET updated_at = ? ,name=? ,description = ?, layout = ? WHERE rowid = ?", (decoded_json['date'],decoded_json['name'], decoded_json['description'], decoded_json['layout'], decoded_json['garden_id']))
         adb.con.commit()
-
     except:
         return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
     return jsonify({"status": 200, "message": "Saved Garden Successfully!"})
@@ -256,7 +255,6 @@ def api_update_user_plant():
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
     try:
-        #TODO add user JWT auth
         adb.cur.execute(f"UPDATE user_plants SET plant_id = {decoded_json['plant_id']}, variety_id = {decoded_json['plant_id']}, garden_id = {decoded_json['plant_id']}, name = '{decoded_json['name']}', updated_at = '{decoded_json['date']}', description = '{decoded_json['description']}', info_url = {decoded_json['info_url']}) WHERE rowid = {decoded_json['userplant_id']}")
         adb.con.commit()
 

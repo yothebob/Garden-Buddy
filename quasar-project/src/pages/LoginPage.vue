@@ -15,11 +15,9 @@
 		       />
 		   </template>
 	       </q-input>
-
-	       <!-- <input v-model="_password" name="password" type="text" /><br/> -->
-	       <q-btn @click="apiLoginUser" color="white" text-color="black" label="Login" />
-	       <div style="padding: 10px;">
-		   <a href="/create/"> Create User</a>
+	       <div style="padding-left:45%;" >
+		   <q-btn @click="apiLoginUser" color="white" text-color="black" label="Login" /><br/>
+		   <a style="padding: 10px;" href="/create/"> Create User</a>
 	       </div>
 	</div>
 	<router-view />

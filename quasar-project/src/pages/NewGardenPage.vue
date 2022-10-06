@@ -15,7 +15,7 @@
 			  <q-list dense bordered padding class="rounded-borders">
 			      <q-item>
 				  <q-item-section>
-				      <q-item-label>{{gg.name}}</q-item-label>
+				      <q-item-label>{{gg.label}}</q-item-label>
 				      <q-item-label caption lines="2">{{gg.description}}</q-item-label>
 				  </q-item-section>
 				  
@@ -57,8 +57,10 @@
 		      
 		  </div>
 		  <div v-else>
-		  <h3>Edit Garden</h3><br/>
-		  
+		    <h3>Edit Garden</h3><br/>
+		      
+		    <q-select rounded outlined v-model.number="_gardenId" :options="_gardens" emit-value label="Which Garden?" /><br/>
+		      
 		  <q-input rounded outlined v-model="_gardenName" label="Garden Name" />
 		  <br/>
 		  
@@ -70,7 +72,7 @@
 		  />
 		  <br/>
 		  
-		  <q-btn @click="sendEditGarden" color="white" text-color="black" label="Add Garden" />
+		  <q-btn @click="sendEditGarden" color="white" text-color="black" label="Edit Garden" />
 		  
 	      </div>
 	      <div>
@@ -109,6 +111,8 @@
      name: 'NewGardenLayout',
      data: () => {
 	 return {
+	     _gardenId: null,
+	     userId: null,
 	     gardenTrack: null,
 	     _gardens: null,
 	     _alert: null,
@@ -187,14 +191,51 @@
 		 console.log(response)
 		 if (response.status == 200) {
 		     this._gardens = response.data.gardens;
+		     this.userId = response.data.user_id;
 		 }
 	     })
 	 },
 	 sendNewGarden: function () {
-	     console.log("hello")
+	     let date = new Date();
+	     let dateString = String(((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear());
+
+	     let newGardenPost = {
+		 "user_id": this.userId,
+		 "date": dateString,
+		 "name": this._gardenName,
+		 "description": this._gardenDescription,
+		 "layout": "coming soon",
+		 "metadata": "coming soon"
+	     }
+	     axios.post("/api/garden/new",newGardenPost).then((response) => {
+		 console.log(response)
+		 if (response.status == 200) {
+		     this._alert = true
+		     this._message = response.data.message;
+		     location.href="/home/";
+		 }
+	     })
 	 },
 	 sendEditGarden: function () {
-	     console.log("hello")
+	     let date = new Date();
+	     let dateString = String(((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear());
+
+	     let updateGardenPost = {
+		 "garden_id": this._gardenId,
+		 "date": dateString,
+		 "name": this._gardenName,
+		 "description": this._gardenDescription,
+		 "layout": "coming soon",
+		 "metadata": "coming soon"
+	     }
+	     axios.post("/api/garden/update",updateGardenPost).then((response) => {
+		 console.log(response)
+		 if (response.status == 200) {
+		     this._alert = true
+		     this._message = response.data.message;
+		     location.href="/home/";
+		 }
+	     })
 	 },
      },
  })

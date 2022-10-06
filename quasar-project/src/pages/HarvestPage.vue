@@ -2,9 +2,7 @@
     <q-layout view="lHh Lpr lFf">
 	<q-page-container>
 	    <div class="app-content">
-		<div style="padding-top: 5%;">
-		    <q-btn @click="submitHarvest" color="white" text-color="black" label="Submit Harvest" /><br/>
-		</div>
+		<div >
 		<q-item v-for="hp in totalHarvestedPlants" :key="hp">
 		    <div>
 			<h3>What Kind of plant?</h3>
@@ -71,7 +69,7 @@
 		    </div>
 		    
 				</q-item>
-
+		</div>
 				<div style="padding-top: 5%;">
 				    <q-btn @click="submitHarvest" color="white" text-color="black" label="Submit Harvest" /><br/>
 				</div>
@@ -216,10 +214,10 @@
 		 if (response.status === 200) {
 		     console.log(response)
 		     this._alert = true
-		     this._message = "Save Successful"
+		     this._message = response.data.message
 		 } else {
 		     this._alert = true
-		     this._message = "Uh Oh Something went wrong!"
+		     this._message = response.data.message
 		 }
 	     }) // put error here.. if i remember
 	 },

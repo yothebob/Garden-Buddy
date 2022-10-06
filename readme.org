@@ -1,4 +1,4 @@
-#+TITLE: Garden Tracker
+Q#+TITLE: Garden Tracker
 #+AUTHOR: Brandon  Brodrick
 
 * dev envs
@@ -64,7 +64,7 @@ This NEEDS jwt auth for using
     "gardens": [
     {
     "garden_id": 1,
-    "name": "Backyard Window Garden",
+    "label": "Backyard Window Garden",
     "description": "This is my 2x4 size garden wher ei have buckwheat",
     "layout": "[[0,0,0,0][0,0,0,0]]",
     "metadata": "[{'name': '', 'dataType': '', 'description': ''}, {'name': 'water', 'dataType': 'int', 'description': 'inches per week'}]"
@@ -76,7 +76,7 @@ This NEEDS jwt auth for using
     "plant_id": 1,
     "variety_id": 1,
     "garden_id": 1,
-    "name": "My buckwheat",
+    "label": "My buckwheat",
     "description": "this is by the house being used to fight weeds",
     "foot_size": 1,
     "metadata": "[{'name': '', 'dataType': '', 'description': ''}, {'name': 'water', 'dataType': 'int', 'description': 'inches per week'}]"
@@ -86,7 +86,7 @@ This NEEDS jwt auth for using
      "plant_id": 1,
      "variety_id": 1,
      "garden_id": 1,
-     "name": "My buckwheat 2",
+     "label": "My buckwheat 2",
      "description": "this is by the house being used to fight weeds",
      "foot_size": 1,
      "metadata": "[{'name': '', 'dataType': '', 'description': ''}, {'name': 'water', 'dataType': 'int', 'description': 'inches per week'}]"
@@ -317,5 +317,7 @@ need to be logged in (and eventually jwt)
 **** TODO add more data to home page, lbs totals, grand yeild etc
 **** TODO add/list on harvest page
 **** TODO icons for navbar
+**** TODO update successful create/updates to reoute to home page
+**** DONE fix update and create on garden page 
 
 
