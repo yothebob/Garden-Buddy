@@ -51,7 +51,9 @@
 			       label="Garden Height" /><br/>
 		      
 
-		      <div id="garden-box"></div>
+		      <div id="garden-box">
+			  <div id="start-point"></div>
+		      </div>
 
 		      <q-btn @click="sendNewGarden" color="white" text-color="black" label="Add Garden" />
 		      
@@ -133,36 +135,36 @@
      },
      methods: {
 	 createDiv: function (idName, content, insertedBeforeId, tag) {
+	     console.log(idName, content, insertedBeforeId, tag)
 	     const newDiv = document.createElement(tag);
 	     if (tag == "div") {
 		 newDiv.innerText = content;
 	     }
-	     const prevDiv = document.getElementById(insertedBeforeId);
-	     document.body.insertBefore(newDiv,prevDiv);
+	     const parentDiv = document.getElementById("garden-box");
+	     parentDiv.append(newDiv)
 	 },
 	 UpdateGardenSize: function () {
-	     console.log("running")
-	     console.log(!isNaN(this._gardenWidth))
-	     console.log(!isNaN(this._gardenHeight))
-	     if (!isNaN(this._gardenWidth) && !isNaN(this._gardenHeight)) {
-		 let insertBfore = "garden-box"; 
-		 let idStr = "0__0";
-		 
-		 for (let i = 0; i < this._gardenWidth.length; i++) {
-		     for (let ii = 0; ii < this._gardenHeight.length; ii++) {
-			 insertBfore = idStr
-			 idStr = String(i) + "__" + String(ii);
-			 console.log(idStr)
-			 if (document.getElementById(idStr)) {
-			     console.log("already made", idStr)
+	     if ((!isNaN(this._gardenWidth) && !isNaN(this._gardenHeight)) && (this._gardenHeight > 0 && this._gardenWidth > 0)) {
+		 let startId = "start-point"
+		 let prevIdStr = ""
+		 let strId = ""
+		 for (let i = 0 ; i < this._gardenHeight; i++) {
+		     for (let ii = 0 ; ii < this._gardenWidth; ii++) {
+			 prevIdStr = strId
+			 if (prevIdStr === "") {prevIdStr = startId}
+			 strId = `${i}__${ii}`
+			 if (document.getElementById(strId) != null) {
+			     console.log("skipping")
+			     console.log(prevIdStr, strId, startId)
 			 } else {
-			     this.createDiv(idStr, "T", insertBfore, "div");			     
+			     console.log(prevIdStr, strId, startId)
+			     this.createDiv(strId, "t", prevIdStr, "div")
 			 }
 		     }
-		     this.createDiv(idStr + "br", "T", insertBfore, "br")
+		     console.log(prevIdStr, strId, startId)
+		     this.createDiv(`${strId}_br`, "", prevIdStr, "br")
 		 }
 	     }
-	     
 	 },
 	 editGardenTrack: function () {
 	     this.gardenTrack = "edit"
