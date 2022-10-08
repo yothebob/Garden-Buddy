@@ -51,8 +51,7 @@
 			       label="Garden Height" /><br/>
 		      
 
-		      <div id="garden-box">
-			  <div id="start-point"></div>
+		      <div id="garden-box" style="display: flex;justify-content: space-evenly;">
 		      </div>
 
 		      <q-btn @click="sendNewGarden" color="white" text-color="black" label="Add Garden" />
@@ -96,9 +95,9 @@
 		      </q-dialog>
 		  </div>
 	      </div>
-      </div>
+	      </div>
 
-      
+	      
 	      
 	      <router-view />
 	  </q-page-container>
@@ -125,6 +124,7 @@
 	     _gardenHeight: null,
 	 };
      },
+
      created() {
 	 this._gardenWidth = 0;
 	 this._gardenHeight = 0;
@@ -133,48 +133,63 @@
 	 this.apiGetUserData();
 	 this.gardenTrack = "list";
      },
+
      methods: {
-	 createDiv: function (idName, content, insertedBeforeId, tag) {
-	     console.log(idName, content, insertedBeforeId, tag)
+	 createRow: function (idName, parentId, tag) {
+	     const newDiv = document.createElement(tag);
+	     newDiv.id = idName
+	     /* newDiv.style.display = "inline-block" */
+	     const parentDiv = document.getElementById(parentId);
+	     parentDiv.append(newDiv)
+	 },
+
+	 createDiv: function (idName, content, parentId, tag) {
 	     const newDiv = document.createElement(tag);
 	     if (tag == "div") {
 		 newDiv.innerText = content;
 	     }
-	     const parentDiv = document.getElementById("garden-box");
+	     newDiv.id = idName
+	     const parentDiv = document.getElementById(parentId);
 	     parentDiv.append(newDiv)
 	 },
+
 	 UpdateGardenSize: function () {
 	     if ((!isNaN(this._gardenWidth) && !isNaN(this._gardenHeight)) && (this._gardenHeight > 0 && this._gardenWidth > 0)) {
-		 let startId = "start-point"
+		 let startId = "row_0"
 		 let prevIdStr = ""
 		 let strId = ""
 		 for (let i = 0 ; i < this._gardenHeight; i++) {
+		     prevIdStr = `row_${i}`
+		     this.createRow(prevIdStr, "garden-box", "div")		     
 		     for (let ii = 0 ; ii < this._gardenWidth; ii++) {
-			 prevIdStr = strId
-			 if (prevIdStr === "") {prevIdStr = startId}
+			 /* if (prevIdStr === "") {prevIdStr = startId} */
 			 strId = `${i}__${ii}`
 			 if (document.getElementById(strId) != null) {
 			     console.log("skipping")
-			     console.log(prevIdStr, strId, startId)
+			     console.log(prevIdStr, strId)
 			 } else {
-			     console.log(prevIdStr, strId, startId)
+			     console.log(prevIdStr, strId)
 			     this.createDiv(strId, "t", prevIdStr, "div")
 			 }
 		     }
-		     console.log(prevIdStr, strId, startId)
-		     this.createDiv(`${strId}_br`, "", prevIdStr, "br")
+		     console.log(prevIdStr, strId)
+		     this.createDiv(`garden_${i}_br`, "", "garden-box", "br")
 		 }
 	     }
 	 },
+
 	 editGardenTrack: function () {
 	     this.gardenTrack = "edit"
 	 },	 
+
 	 newGardenTrack: function () {
 	     this.gardenTrack = "new"
 	 },
+
 	 listGardenTrack: function () {
 	     this.gardenTrack = "list"
 	 },
+
 	 apiCheckLogin: function () {
 	     axios.get("/api/who-am-i/").then((response) => {
 		 console.log(response)
@@ -242,3 +257,11 @@
      },
  })
 </script>
+<style>
+ div.garden-box {
+     display: flex;
+     justify-content: space-evenly;
+ }
+
+ 
+</style>
