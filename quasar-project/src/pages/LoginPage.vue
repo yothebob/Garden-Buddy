@@ -28,27 +28,37 @@
 <script>
  import { defineComponent, ref } from 'vue'
  import axios from 'axios'
- 
- export default defineComponent({
-     name: 'LoginLayout',
-     data: () => {
-	 return {
-	     isPwd: true,
-	     "_username": null,
-	     "_password": null
-	 };
-     },
-     components: {
-     },
-     methods: {
-	 apiLoginUser: function () {
-	     /* TODO add jwt */
-	     axios.post(`/api/login/?username=${this._username}&password=${this._password}`, {}).then((response) => {
-		 if (response.status === 200) {
-		     window.location.href = '/home/'
-		 }
-	     })
-	 }
-     }
- })
+ /* import VueCryptojs from 'vue-cryptojs' */
+ /* https://github.com/tpenaranda/vue-cryptojs */
+	
+	export default defineComponent({
+	    name: 'LoginLayout',
+	    data: () => {
+		return {
+		    isPwd: true,
+		    "_username": null,
+		    "_password": null,
+		    "apiSecret": "",
+		};
+	    },
+	    created() {
+		/* this.apiSecret = "usethisfordevenvonly" */
+	    },
+	    components: {
+	    },
+	    methods: {
+		apiLoginUser: function () {
+		    /* TODO add jwt */
+		    /* get crypto for online? */
+		    /* const msg = Buffer.from(this._password).toString('base64')
+		       const hash = crypto.createHmac('sha256', this.apiSecret).update(msg).digest('base64') */
+		    /* axios.post(`/api/login/?username=${this._username}&password=${hash}`, {}).then((response) => { */
+		    axios.post(`/api/login/?username=${this._username}&password=${this._password}`, {}).then((response) => {
+			if (response.status === 200) {
+			    window.location.href = '/home/'
+			}
+		    })
+		}
+	    }
+	})
 </script>

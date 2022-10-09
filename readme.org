@@ -295,8 +295,8 @@ need to be logged in (and eventually jwt)
 
 * TODO plans
 *** TODO Backend
-**** TODO fix sql injection
 **** TODO fix possible account security, login/ create, limit api calls
+**** DONE fix sql injection
 **** TODO need to add jwt,
 **** TODO user_token
 **** TODO user_garden metadata
@@ -307,7 +307,7 @@ need to be logged in (and eventually jwt)
 **** TODO add csv data dump
 **** TODO mathplotlib graph generation
 **** TODO update homepage query to try to get userplant_id if possible
-**** TODO add/fix edit calls
+**** DONE add/fix edit calls
 **** TODO add delete userplant/garden functionality
 *** TODO Front end
 **** TODO fix quasar navbar (global)

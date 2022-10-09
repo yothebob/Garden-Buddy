@@ -158,21 +158,16 @@
 		 let startId = "row_0"
 		 let prevIdStr = ""
 		 let strId = ""
+		 document.getElementById("garden-box").innerHTML = "";
 		 for (let i = 0 ; i < this._gardenHeight; i++) {
 		     prevIdStr = `row_${i}`
 		     this.createRow(prevIdStr, "garden-box", "div")		     
 		     for (let ii = 0 ; ii < this._gardenWidth; ii++) {
-			 /* if (prevIdStr === "") {prevIdStr = startId} */
 			 strId = `${i}__${ii}`
-			 if (document.getElementById(strId) != null) {
-			     console.log("skipping")
-			     console.log(prevIdStr, strId)
-			 } else {
-			     console.log(prevIdStr, strId)
+			 if (document.getElementById(strId) == null) {
 			     this.createDiv(strId, "t", prevIdStr, "div")
-			 }
+			 } 
 		     }
-		     console.log(prevIdStr, strId)
 		     this.createDiv(`garden_${i}_br`, "", "garden-box", "br")
 		 }
 	     }
