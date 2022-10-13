@@ -31,6 +31,12 @@ const routes = [
       { path: '', component: () => import('pages/NewGardenPage.vue') }
     ]
   },
+  {
+    path: '/export/',
+    children: [
+      { path: '', component: () => import('pages/ExportPage.vue') }
+    ]
+  },
 
   {
     path: '/harvest/new/',

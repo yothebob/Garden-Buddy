@@ -84,6 +84,12 @@ const linksList = [
       icon: 'chat',
       link: '/harvest/new/'
   },
+  {
+      title: 'Export Data',
+      caption: 'Export your User data',
+      icon: 'chat',
+      link: '/export/'
+  },
 ]
 
 export default defineComponent({

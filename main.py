@@ -4,14 +4,13 @@ import csv
 import hashlib
 import hmac
 
-
-from flask import Flask, render_template, url_for, request, redirect, jsonify
+from flask import Flask, render_template, url_for, request, redirect, jsonify, send_file
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from migrations import total_migrations, unrun_migrations
 from wtforms import Form, SelectField, SubmitField, validators, RadioField,StringField
 from wtforms.widgets import PasswordInput
 from config import bSECRET
-
+from openpyxl import Workbook
 
 from app_database import AppDataBase
 
@@ -335,8 +334,8 @@ def api_harvest_serializer():
     from harvests as h
     INNER JOIN plants as p ON h.plant_id = p.rowid
     INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
-    WHERE h.user_id = {} ORDER BY h.rowid DESC""".format(user_id)
-    query_harvests = adb.cur.execute(q_string).fetchall()
+    WHERE h.user_id = ? ORDER BY h.rowid DESC"""
+    query_harvests = adb.cur.execute(q_string, (user_id,)).fetchall()
 
     # maybe here do another sql command and loop through data to add a user plant??
     # INNER JOIN user_plants as up ON h.userplant_id = up.rowid
@@ -371,27 +370,46 @@ def api_variety_serializer():
 
 
 @login_required    
-@app.route("/api/export_data/", methods=["GET"])
-def api_export_data():
+@app.route("/api/export_data/<export_type>", methods=["GET"])
+def api_export_user_harvests(export_type):
     if current_user.is_anonymous == True:
         return jsonify({"status": 500, "message": "Not Authorized"})
 
     user_id = current_user.id
     if user_id is None:
         return jsonify({"status": 500, "message": "No user supplied"})
-    export_type = request.args.get("export_type", None)
-    export_type = "csv"
 
-    harvest_data_dump = adb.cur.execute("SELECT * from harvests WHERE user_id=?",(user_id,)).fetchall()
+    harvest_data_dump = adb.cur.execute("""SELECT
+    h.harvested_at,
+    p.name,
+    ug.name,
+    h.quantity,
+    h.pound,
+    h.ounce,
+    h.notes
+    from harvests as h
+    INNER JOIN plants as p ON h.plant_id = p.rowid
+    INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
+    WHERE h.user_id = ? ORDER BY h.rowid DESC""",(user_id,)).fetchall()
     #todo dump userplant data and garden data
     if export_type == "csv":
-        with open("harvest_dump.csv", "w") as cf:
+        with open("/tmp/export.csv", "w") as cf:
             csvfile = csv.writer(cf)
-            [cf.writerow(line) for line in harvest_data_dump]
-        return cf
+            [csvfile.writerow(line) for line in harvest_data_dump]
+        return send_file("/tmp/export.csv", mimetype='text/csv',download_name="exported_harvests.csv", as_attachment=True)
+    elif export_type == "xlsx":
+        wb = Workbook()
+        ws = wb.active
+        for row in range(len(harvest_data_dump)):
+            for col in range(len(harvest_data_dump[row])):
+                _ = ws.cell(column=col+1, row=row+1, value=harvest_data_dump[row][col])
+        wb.save("/tmp/export.xlsx")
+        return send_file("/tmp/export.xlsx",
+                         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                         download_name="exported_harvests.xlsx", as_attachment=True)
     elif export_type == "ui":
         pass # get data for front end 
-    serialized["varietys"] = [{variety_titles[i] : variety[i] for i in range(len(variety_titles))} for variety in query_varietys]
+    # serialized["varietys"] = [{variety_titles[i] : variety[i] for i in range(len(variety_titles))} for variety in query_varietys]
 
 
     # if __name__ == "__main__":
