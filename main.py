@@ -9,7 +9,7 @@ from flask_login import LoginManager, login_user, logout_user, current_user, log
 from migrations import total_migrations, unrun_migrations
 from wtforms import Form, SelectField, SubmitField, validators, RadioField,StringField
 from wtforms.widgets import PasswordInput
-from config import bSECRET
+from config import bSECRET, LOCKOUT, LOCKOUT_LIMIT, ADMIN_EMAIL
 from openpyxl import Workbook
 
 from app_database import AppDataBase
@@ -122,23 +122,39 @@ def login_page():
     username = request.args.get("username", None)
     password = request.args.get("password", None)
     print(username, password)
+    
     if username is None or password is None:
         return jsonify({"status": 500})
-    if request.method == "POST":
-        #TODO add pass encryption probably
-        query = adb.cur.execute("SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE username=? AND password=?",(username,password)).fetchone()
-        print(query)
-        if query is not None:
-            instance = User(query[0],query[1],query[2],query[3],query[4],query[5])
-        if instance is not None:
-            print(instance)
-            login_user(instance)
-            return jsonify({"status": 200, "auth": f""})
-        else:
-            return jsonify({"status": 500})
-    else:
-        return jsonify({"status": 500})
 
+    if request.method == "POST":
+        if LOCKOUT == True:
+            user_failed_attempts = adb.cur.execute("SELECT failed_attempts FROM users WHERE username=?",(username,)).fetchone()[0]
+            print(user_failed_attempts)
+            if user_failed_attempts is not None and user_failed_attempts < LOCKOUT_LIMIT:
+                query = adb.cur.execute("SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE username=? AND password=?",(username,password)).fetchone()
+                print(query)
+                if query is not None:
+                    print("making instance")
+                    instance = User(query[0],query[1],query[2],query[3],query[4],query[5])
+                    if instance is not None:
+                        print(instance)
+                        login_user(instance)
+                        return jsonify({"status": 200, "auth": f""})
+                adb.cur.execute("UPDATE users SET failed_attempts=? WHERE username=?", ((user_failed_attempts + 1),username))
+                adb.con.commit()
+                return jsonify({"status": 500, "message": "Something has gone wrong"})
+            return jsonify({"status": 500, "message": f"Your account is locked please email {ADMIN_EMAIL} for assistance."})
+        else:
+            query = adb.cur.execute("SELECT rowid, username, name, is_active, is_authenticated, is_anonymous FROM users WHERE username=? AND password=?",(username,password)).fetchone()
+            print(query)
+            if query is not None:
+                instance = User(query[0],query[1],query[2],query[3],query[4],query[5])
+                if instance is not None:
+                    print(instance)
+                    login_user(instance)
+                    return jsonify({"status": 200, "auth": f""})
+            return jsonify({"status": 500,"message": "Something has gone wrong" })
+            
 
    
 ##########################################################################
@@ -151,7 +167,8 @@ def api_harvest():
     # TODO add jwt auth
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
-    try:
+    # try:
+    if True:
         for item in decoded_json["harvested"]:
             if item['userplant_id'] != 0:
                 item['plant_id'] = adb.cur.execute("SELECT plant_id FROM user_plants WHERE rowid=?",(item['userplant_id'],)).fetchone()[0]
@@ -159,8 +176,8 @@ def api_harvest():
             adb.cur.execute("INSERT into harvests (user_id, plant_id, userplant_id, garden_id, harvested_at, quantity, pound, ounce, notes, metadata) VALUES (?,?,?,?,?,?,?,?,?,?)",(decoded_json['user_id'],item['plant_id'],item['userplant_id'],item['garden_id'],decoded_json['date'],item['pound'],(item['quantity'] if item['quantity'] is not None else 'null'),item['ounce'],item['notes'],str(item['metadata'])))
         adb.con.commit()
 
-    except:
-        return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
+    # except:
+        # return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
     return jsonify({"status": 200, "message": "Saved Harvest Successfully!"})
 
 
@@ -380,18 +397,29 @@ def api_export_user_harvests(export_type):
         return jsonify({"status": 500, "message": "No user supplied"})
 
     harvest_data_dump = adb.cur.execute("""SELECT
+    h.rowid,
     h.harvested_at,
     p.name,
     ug.name,
     h.quantity,
     h.pound,
     h.ounce,
-    h.notes
+    h.notes,
+    h.metadata
     from harvests as h
     INNER JOIN plants as p ON h.plant_id = p.rowid
     INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
     WHERE h.user_id = ? ORDER BY h.rowid DESC""",(user_id,)).fetchall()
     #todo dump userplant data and garden data
+    print(harvest_data_dump)
+    # userpant_harvest_data = adb.cur.execute("""
+    # SELECT
+    # h.rowid,
+    # up.name
+    # FROM harvests as h
+    # INNER JOIN user_plants as up on h.userplant_id =up.rowid
+    # WHERE h.user_id=? ORDER BY h.rowid DESC
+    # """,(user_id,)).fetchall()
     if export_type == "csv":
         with open("/tmp/export.csv", "w") as cf:
             csvfile = csv.writer(cf)
