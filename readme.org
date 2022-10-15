@@ -285,6 +285,20 @@ need to be logged in (and eventually jwt)
     "info_url": "www.google.com" 
   }
 #+END_SRC 
+** Delete Calls
+*** /api/delete/<data_type>/<id
+ GET /api/delete/harvests/1
+#+BEGIN_SRC javascript
+    {
+	"status": 500,
+	"message": "invalid argument"
+    }
+  {
+      "status": 200,
+      "message": "Delete succcessful!"
+  }
+#+END_SRC 
+
 ** /logout/
 #+BEGIN_SRC json
 #+END_SRC 

@@ -27,9 +27,10 @@
 				<div>{{_harvestedPlants[hp].metadata[(md-1)].description}}</div><br/>
 
 				<div v-if="_harvestedPlants[hp].metadata[(md-1)].dataType == 'bool'">
-				    <q-radio v-model.string="_harvestedPlants[hp].metadata[(md-1)].value"
-					     checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
-					     :label="_harvestedPlants[hp].metadata[(md -1)].name" /><br/>
+				    <q-select rounded outlined v-model.string="_harvestedPlants[hp].metadata[(md-1)].value"
+					      @update:model-value="showPlantMetadata(_harvestedPlants[hp].userplant_id, hp)"
+					      :options="['true','false']" emit-value
+					      :label="_harvestedPlants[hp].metadata[(md -1)].name" /><br/>
 				</div>
 				<div v-else-if="_harvestedPlants[hp].metadata[(md-1)].dataType == 'int'">
 				    <q-input rounded outlined

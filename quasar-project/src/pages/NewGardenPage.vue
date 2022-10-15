@@ -224,7 +224,7 @@
 		 if (response.status == 200) {
 		     this._alert = true
 		     this._message = response.data.message;
-		     location.href="/home/";
+		     this.listGardenTrack()
 		 }
 	     })
 	 },
@@ -245,7 +245,7 @@
 		 if (response.status == 200) {
 		     this._alert = true
 		     this._message = response.data.message;
-		     location.href="/home/";
+		     this.listGardenTrack()
 		 }
 	     })
 	 },

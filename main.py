@@ -386,6 +386,28 @@ def api_variety_serializer():
         return jsonify(serialized)
 
 
+
+    
+@login_required    
+@app.route("/api/delete/<data_type>/<id>", methods=["GET"])
+def api_delete_type(data_type, id):
+    if data_type is None or id is None:
+        return jsonify({"status": 500, "message": "Missing argument"})
+    data_type_list = [
+        "harvests",
+        "user_plants",
+        "user_gardens"
+    ]
+    if data_type not in data_type_list:
+        return jsonify({"status": 500, "message": "invalid argument"})
+        
+    belongs_to_user = adb.cur.execute(f"SELECT * FROM {data_type} WHERE user_id=?",(current_user.id,)).fetchone()
+    if belongs_to_user is not None:
+        adb.cur.execute(f"DELETE FROM {data_type} WHERE rowid=?",(id,)).fetchone()
+        adb.con.commit()
+        return jsonify({"status": 200, "message": "Delete succcessful!"})
+    return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
+    
 @login_required    
 @app.route("/api/export_data/<export_type>", methods=["GET"])
 def api_export_user_harvests(export_type):
@@ -412,25 +434,35 @@ def api_export_user_harvests(export_type):
     WHERE h.user_id = ? ORDER BY h.rowid DESC""",(user_id,)).fetchall()
     #todo dump userplant data and garden data
     print(harvest_data_dump)
-    # userpant_harvest_data = adb.cur.execute("""
-    # SELECT
-    # h.rowid,
-    # up.name
-    # FROM harvests as h
-    # INNER JOIN user_plants as up on h.userplant_id =up.rowid
-    # WHERE h.user_id=? ORDER BY h.rowid DESC
-    # """,(user_id,)).fetchall()
+    userpant_harvest_data = adb.cur.execute("""
+    SELECT
+    up.name
+    FROM harvests as h
+    INNER JOIN user_plants as up on h.userplant_id =up.rowid
+    WHERE h.user_id=? ORDER BY h.rowid DESC
+    """,(user_id,)).fetchall()
     if export_type == "csv":
+        total_list = []
+        if len(userpant_harvest_data) == len(harvest_data_dump):
+            for i in range(len(harvest_data_dump)):
+                total_list.append(userpant_harvest_data[i]+harvest_data_dump[i])
+        print(total_list)
         with open("/tmp/export.csv", "w") as cf:
             csvfile = csv.writer(cf)
-            [csvfile.writerow(line) for line in harvest_data_dump]
+            [csvfile.writerow(line) for line in total_list]
         return send_file("/tmp/export.csv", mimetype='text/csv',download_name="exported_harvests.csv", as_attachment=True)
     elif export_type == "xlsx":
         wb = Workbook()
         ws = wb.active
-        for row in range(len(harvest_data_dump)):
-            for col in range(len(harvest_data_dump[row])):
-                _ = ws.cell(column=col+1, row=row+1, value=harvest_data_dump[row][col])
+        total_list = []
+        if len(userpant_harvest_data) == len(harvest_data_dump):
+            for i in range(len(harvest_data_dump)):
+                total_list.append(userpant_harvest_data[i]+harvest_data_dump[i])
+        print(total_list)
+
+        for row in range(len(total_list)):
+            for col in range(len(total_list[row])):
+                _ = ws.cell(column=col+1, row=row+1, value=total_list[row][col])
         wb.save("/tmp/export.xlsx")
         return send_file("/tmp/export.xlsx",
                          mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
