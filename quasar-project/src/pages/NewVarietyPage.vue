@@ -171,9 +171,11 @@
 		     console.log(response)
 		     this._message = response.data.message
 		     this._alert = true;
+		     this.listVarietyTrack()
 		 } else {
 		     this._alert = true;
 		     this._message = response.data.message
+		     this.listVarietyTrack()
 		 }
 	     }).catch(function (error) {
 		 console.log(error.toJSON());
@@ -193,9 +195,11 @@
 		     console.log(response)
 		     this._message = response.data.message
 		     this._alert = true;
+		     this.listVarietyTrack()
 		 } else {
 		     this._alert = true;
 		     this._message = response.data.message
+		     this.listVarietyTrack()
 		 }
 	     }).catch(function (error) {
 		 console.log(error.toJSON());

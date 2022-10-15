@@ -54,7 +54,7 @@
 	    </div>
 	    <div v-else>
 		<h3>Edit Plant</h3><br/>
-		
+		<q-select rounded outlined v-model="_plantId" :options="_plants" emit-value label="Plant" /><br/>
 		<q-input rounded outlined v-model="_plantName" label="Plant Name" />
 		<br/>
 		
@@ -117,6 +117,7 @@
 	     _alert: null,
 	     _message: null,
 	     _plantName: null,
+	     _plantId: null,
 	     _plantDescription: null,
 	     _plantInfoUrl: null
 	 };
@@ -168,6 +169,28 @@
 
 		     // should I just have this on a generic plant page? 
 		     /* window.location.href = '/home/' */
+		 } else {
+		     this._alert = true
+		     this._message = "Uh Oh Something went wrong!"
+		     this.plantTrack = "list"
+
+		 }
+	     })
+	 },
+	 sendUpdatePlant: function () {
+	     let _updatePlantdata = {
+		 "plant_id": this._plantName,
+		 "name": this._plantName,
+		 "description": this._plantDescription, 
+		 "info_url": this._plantInfoUrl,
+	     };
+	     
+	     axios.post(`/api/plant/update`, _updatePlantdata).then((response) => {
+		 if (response.status === 200) {
+		     
+		     this._alert = true
+		     this._message = "Save Successful"
+		     this.plantTrack = "list"
 		 } else {
 		     this._alert = true
 		     this._message = "Uh Oh Something went wrong!"
