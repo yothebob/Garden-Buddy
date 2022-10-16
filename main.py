@@ -458,7 +458,6 @@ def api_export_user_harvests(export_type):
         if len(userpant_harvest_data) == len(harvest_data_dump):
             for i in range(len(harvest_data_dump)):
                 total_list.append(userpant_harvest_data[i]+harvest_data_dump[i])
-        print(total_list)
 
         for row in range(len(total_list)):
             for col in range(len(total_list[row])):
