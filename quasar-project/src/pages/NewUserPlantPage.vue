@@ -146,6 +146,7 @@
 	     _plant: null,
 	     _plants: null,
 	     _variety: null,
+	     _varietys: null,
 	     _userPlants: null,
 	     _userPlantFootSize: null,
 	     _userPlantGarden: null,
@@ -238,7 +239,7 @@
 	     let sendData = {
 		 "user_id": this._userId,
 		 "plant_id": this._plant,
-		 "variety_id": this.variety,
+		 "variety_id": this._variety,
 		 "garden_id": this._userPlantGarden,
 		 "date": dateString,
 		 "name": this._userPlantName,
@@ -252,6 +253,7 @@
 		 if (response.status == 200) {
 		     this._alert = true;
 		     this._message = response.data.message
+		     this.userplantTrack = "list"
 		 }
 	     })
 	 },
@@ -272,11 +274,13 @@
 		 "metadata": this.metadataFields
 	     };
 	     
-	     axios.post("/api/userplant/new",sendData).then((response) => {
+	     axios.post("/api/userplant/update",sendData).then((response) => {
 		 console.log(response)
 		 if (response.status == 200) {
 		     this._alert = true;
 		     this._message = response.data.message
+		     this.userplantTrack = "list"
+		     window.location.reload()
 		 }
 	     })
 	 },

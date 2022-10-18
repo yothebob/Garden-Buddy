@@ -309,16 +309,16 @@ need to be logged in (and eventually jwt)
 
 * TODO plans
 *** TODO Backend
-**** TODO fix possible account security, login/ create, limit api calls
+**** DONE fix possible account security, login/ create, limit api calls
 **** DONE fix sql injection
 **** TODO need to add jwt,
 **** TODO user_token
 **** TODO user_garden metadata
-**** TODO plant foot_size
-**** TODO variety foot_size
+**** DONE plant foot_size
+**** DONE variety foot_size
 **** TODO add list metadata for plants("icon": "star", "label": "high Yeilder")
 **** TODO add favorites?
-**** TODO add csv data dump
+**** DONE add csv data dump
 **** TODO mathplotlib graph generation
 **** TODO update homepage query to try to get userplant_id if possible
 **** DONE add/fix edit calls

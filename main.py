@@ -281,7 +281,7 @@ def api_update_user_plant():
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
     try:
-        adb.cur.execute(f"UPDATE user_plants SET plant_id = ?, variety_id = ?, garden_id = ?, name = ?, updated_at = ?, description = ?, info_url = ? WHERE rowid = ?", (decoded_json['plant_id'],decoded_json['variety_id'], decoded_json['garden_id'], decoded_json['name'], decoded_json['date'], decoded_json['description'], decoded_json['info_url'], decoded_json['userplant_id']))
+        adb.cur.execute(f"UPDATE user_plants SET plant_id = ?, variety_id = ?, garden_id = ?, name = ?, updated_at = ?, description = ? WHERE rowid = ?", (decoded_json['plant_id'],decoded_json['variety_id'], decoded_json['garden_id'], decoded_json['name'], decoded_json['date'], decoded_json['description'], decoded_json['userplant_id']))
         adb.con.commit()
 
     except:
@@ -433,7 +433,6 @@ def api_export_user_harvests(export_type):
     INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
     WHERE h.user_id = ? ORDER BY h.rowid DESC""",(user_id,)).fetchall()
     #todo dump userplant data and garden data
-    print(harvest_data_dump)
     userpant_harvest_data = adb.cur.execute("""
     SELECT
     up.name
