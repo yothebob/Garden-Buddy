@@ -63,7 +63,7 @@ This NEEDS jwt auth for using
     "username": "Brandon",
     "gardens": [
     {
-    "garden_id": 1,
+    "value": 1,
     "label": "Backyard Window Garden",
     "description": "This is my 2x4 size garden wher ei have buckwheat",
     "layout": "[[0,0,0,0][0,0,0,0]]",

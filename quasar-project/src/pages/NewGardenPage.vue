@@ -19,9 +19,14 @@
 				      <q-item-label caption lines="2">{{gg.description}}</q-item-label>
 				  </q-item-section>
 				  
+				  
 				  <q-item-section side top>
-				      <q-item-label caption>garden</q-item-label>
+					  <q-item-label caption>Fav</q-item-label>
 				      <q-icon name="star" color="yellow" />
+				  </q-item-section>
+				      <q-item-section side top>
+					  <q-item-label caption>Delete</q-item-label>
+					  <q-icon @click="apiDeleteItem('user_gardens', gg.value)" name="warning" color="red" />
 				  </q-item-section>
 			      </q-item>
 
@@ -197,7 +202,19 @@
 		 }
 	     })
 	 },
-	 
+
+	 apiDeleteItem: function (dataType, itemId) {
+	     axios.get(`/api/delete/${dataType}/${itemId}`).then((response) => {
+		 if (response.status == 200 && response.data.status == 200) {
+		     this._alert = true
+		     this._message = response.data.message;
+		 } else {
+		     this._alert = true
+		     this._message = response.data.message;
+		 }
+	     })
+	 },
+
 	 apiGetUserData: function () {
 	     axios.get("/api/user/").then((response) => {
 		 console.log(response)
