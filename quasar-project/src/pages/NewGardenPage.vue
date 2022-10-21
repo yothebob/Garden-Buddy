@@ -14,19 +14,13 @@
 		      <div v-for="gg in _gardens" class="q-pa-md">
 			  <q-list dense bordered padding class="rounded-borders">
 			      <q-item>
-				  <q-item-section>
-				      <q-item-label>{{gg.label}}</q-item-label>
-				      <q-item-label caption lines="2">{{gg.description}}</q-item-label>
-				  </q-item-section>
-				  
-				  
+				  <listItem
+				      :key="gg.label"
+				      v-bind="gg"
+				  />
 				  <q-item-section side top>
-					  <q-item-label caption>Fav</q-item-label>
-				      <q-icon name="star" color="yellow" />
-				  </q-item-section>
-				      <q-item-section side top>
 					  <q-item-label caption>Delete</q-item-label>
-					  <q-icon @click="apiDeleteItem('user_gardens', gg.value)" name="warning" color="red" />
+				      <q-icon @click="apiDeleteItem('user_gardens', gg.value)" name="warning" color="red" />
 				  </q-item-section>
 			      </q-item>
 
@@ -113,6 +107,7 @@
 <script>
  import { defineComponent, ref } from 'vue'
  import axios from 'axios'
+ import listItem from 'components/listItem.vue'
  export default defineComponent({
      name: 'NewGardenLayout',
      data: () => {
@@ -129,7 +124,9 @@
 	     _gardenHeight: null,
 	 };
      },
-
+     components: {
+	 listItem
+     },
      created() {
 	 this._gardenWidth = 0;
 	 this._gardenHeight = 0;
@@ -202,7 +199,6 @@
 		 }
 	     })
 	 },
-
 	 apiDeleteItem: function (dataType, itemId) {
 	     axios.get(`/api/delete/${dataType}/${itemId}`).then((response) => {
 		 if (response.status == 200 && response.data.status == 200) {

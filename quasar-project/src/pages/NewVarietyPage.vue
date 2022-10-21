@@ -63,15 +63,10 @@
 	    <div v-for="vv in _varietys" class="q-pa-md">
 		<q-list dense bordered padding class="rounded-borders">
 		    <q-item>
-			<q-item-section>
-			    <q-item-label>{{vv.label}}</q-item-label>
-			    <q-item-label caption lines="2">{{vv.description}}</q-item-label>
-			</q-item-section>
-			
-			<q-item-section side top>
-			    <q-item-label caption>High Yielder</q-item-label>
-			    <q-icon name="star" color="yellow" />
-			</q-item-section>
+			<listItem
+			    :key="vv.label"
+			    v-bind="vv"
+			/>
 		    </q-item>
 
 		    <q-separator spaced inset />
@@ -104,7 +99,7 @@
 <script>
  import { defineComponent, ref } from 'vue'
  import axios from 'axios'
-
+import listItem from 'components/listItem.vue'
  export default defineComponent({
      name: 'NewVarietyLayout',
 
@@ -122,7 +117,9 @@
 	     _varietyInfoUrl: null
 	 };
      },
-
+     components: {
+	 listItem
+     },
      created() {
 	 this.varietyTrack = "list";
 	 this.apiCheckLogin();

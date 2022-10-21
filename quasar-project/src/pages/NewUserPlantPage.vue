@@ -86,20 +86,15 @@
 		</div>
 		<div>
 		<div v-if="userplantTrack == 'list'">
+		    <h3>List User Plants</h3><br/>
 		    <div v-for="ups in _userPlants" class="q-pa-md">
 			<q-list dense bordered padding class="rounded-borders">
-			    <q-item>
-				<q-item-section>
-				    <q-item-label>{{ups.label}}</q-item-label>
-				    <q-item-label caption lines="2">{{ups.description}}</q-item-label>
-				</q-item-section>
-				
-				<q-item-section side top>
-				    <q-item-label caption>High Yielder</q-item-label>
-				    <q-icon name="star" color="yellow" />
-				</q-item-section>
+			    <q-item clickable v-ripple @click="dothing">
+				<listItem
+				    :key="ups.label"
+				    v-bind="ups"
+				/>				
 			    </q-item>
-
 			    <q-separator spaced inset />
 			</q-list>
 		    </div>
@@ -134,6 +129,7 @@
 <script>
  import { defineComponent, ref } from 'vue'
  import axios from 'axios'
+ import listItem from 'components/listItem.vue'
  
  export default defineComponent({
      name: 'NewUserPlantLayout',
@@ -158,6 +154,10 @@
 	     _dataTypes: null,
 	 };
      },
+     components: {
+	 listItem
+     },
+
      created() {
 	 this._dataTypes = [
 	     "bool",
@@ -179,6 +179,9 @@
 	 this.userplantTrack = "list";
      },
      methods: {
+	 dothing: function () {
+	     alert("hello")
+	 },
 	 editUserplantTrack: function () {
 	     this.userplantTrack = "edit"
 	 },	 
