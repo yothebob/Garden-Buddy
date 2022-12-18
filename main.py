@@ -432,20 +432,10 @@ def api_export_user_harvests(export_type):
     INNER JOIN plants as p ON h.plant_id = p.rowid
     INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
     WHERE h.user_id = ? ORDER BY h.rowid DESC""",(user_id,)).fetchall()
-    #todo dump userplant data and garden data
-    userpant_harvest_data = adb.cur.execute("""
-    SELECT
-    up.name
-    FROM harvests as h
-    INNER JOIN user_plants as up on h.userplant_id =up.rowid
-    WHERE h.user_id=? ORDER BY h.rowid DESC
-    """,(user_id,)).fetchall()
     if export_type == "csv":
         total_list = []
-        if len(userpant_harvest_data) == len(harvest_data_dump):
-            for i in range(len(harvest_data_dump)):
-                total_list.append(userpant_harvest_data[i]+harvest_data_dump[i])
-        print(total_list)
+        for i in range(len(harvest_data_dump)):
+            total_list.append(harvest_data_dump[i])
         with open("/tmp/export.csv", "w") as cf:
             csvfile = csv.writer(cf)
             [csvfile.writerow(line) for line in total_list]
@@ -454,9 +444,8 @@ def api_export_user_harvests(export_type):
         wb = Workbook()
         ws = wb.active
         total_list = []
-        if len(userpant_harvest_data) == len(harvest_data_dump):
-            for i in range(len(harvest_data_dump)):
-                total_list.append(userpant_harvest_data[i]+harvest_data_dump[i])
+        for i in range(len(harvest_data_dump)):
+            total_list.append(harvest_data_dump[i])
 
         for row in range(len(total_list)):
             for col in range(len(total_list[row])):
