@@ -79,7 +79,7 @@ def load_user(user_id):
     return User(user[0],user[1],user[2],user[3],user[4],user[5])
 
 
-@app.route('/api/logout/', methods=['POST'])
+@app.route('/api/logout/', methods=['GET'])
 @login_required
 def logout():
     logout_user()
@@ -446,7 +446,7 @@ def api_export_user_harvests(export_type):
     elif export_type == "xlsx":
         wb = Workbook()
         ws = wb.active
-        # TODO add titles
+        # TODO add titleso
         for row in range(len(harvest_data_dump)):
             for col in range(len(harvest_data_dump[row])):
                 _ = ws.cell(column=col+1, row=row+1, value=harvest_data_dump[row][col])

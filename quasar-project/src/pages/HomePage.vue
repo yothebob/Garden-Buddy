@@ -4,11 +4,6 @@
 	    <div class="app-content">
 	    <div v-if="_logged_in == true">
 		<div>
-		    <q-btn to="/plant/new/" label="Add a new Plant" outline color="green" /><br/>
-		    <q-btn to="/variety/new/" label="Add a new Variety" outline color="green" /><br/>
-		    <q-btn @click="apiLogOut" label="Logout" outline color="yellow" /><br/>
-		</div>
-		<div>
 		    <h3>Recently Harvested</h3>
 		    <div v-for="harvest in _recentlyHarvested" class="q-pa-md" style="max-width: 350px">
 			<h5>Harvested: {{harvest.userplant_name ? harvest.userplant_name : harvest.plant_name }}</h5>
@@ -78,14 +73,6 @@
      },
 
      methods: {
-	 apiLogOut: function () {
-	     axios.post("/api/logout/",{}).then((response) => {
-		 console.log(response)
-		 if (response.status == 200) {
-		     window.location.href = "/login/"
-		 }
-	     })
-	 },
 	 apiCheckLogin: function () {
 	     axios.get("/api/who-am-i/").then((response) => {
 		 console.log(response)
