@@ -6,7 +6,7 @@
 		    <h3>Harvests</h3>
 		    <div>
 			<q-btn @click="apiExportHarvests('csv')" label="Export Harvests csv" outline color="red" /><br/>
-			<q-btn @click="apiExportHarvests('xlsx')" label="Export Harvests xlsx" outline color="red" /><br/>
+			<!-- <q-btn @click="apiExportHarvests('xlsx')" label="Export Harvests xlsx" outline color="red" /><br/> -->
 		    </div>
 		</div>
 	    </q-page-container>

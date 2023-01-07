@@ -11,7 +11,7 @@
 		<div>
 		    <h3>Recently Harvested</h3>
 		    <div v-for="harvest in _recentlyHarvested" class="q-pa-md" style="max-width: 350px">
-			<h5>Harvested: {{harvest.plant_name}}</h5>
+			<h5>Harvested: {{harvest.userplant_name ? harvest.userplant_name : harvest.plant_name }}</h5>
 			<q-list dense bordered padding class="rounded-borders">
 			    <q-item>
 				<q-item-section>

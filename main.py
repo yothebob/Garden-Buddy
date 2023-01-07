@@ -171,7 +171,8 @@ def api_harvest():
     if True:
         for item in decoded_json["harvested"]:
             if item['userplant_id'] != 0:
-                item['plant_id'] = adb.cur.execute("SELECT plant_id FROM user_plants WHERE rowid=?",(item['userplant_id'],)).fetchone()[0]
+                item['plant_id'] = 0
+                # item['plant_id'] = adb.cur.execute("SELECT plant_id FROM user_plants WHERE rowid=?",(item['userplant_id'],)).fetchone()[0]
             
             adb.cur.execute("INSERT into harvests (user_id, plant_id, userplant_id, garden_id, harvested_at, quantity, pound, ounce, notes, metadata) VALUES (?,?,?,?,?,?,?,?,?,?)",(decoded_json['user_id'],item['plant_id'],item['userplant_id'],item['garden_id'],decoded_json['date'],item['pound'],(item['quantity'] if item['quantity'] is not None else 'null'),item['ounce'],item['notes'],str(item['metadata'])))
         adb.con.commit()
@@ -336,28 +337,26 @@ def api_harvest_serializer():
     if user_id is None:
         return jsonify({"status": 500, "message": "No user supplied"})
     serialized = {}
-    harvests_titles = ["harvested_at", "plant_name", "garden_name", "quantity", "pound", "ounce", "notes"]
+    harvests_titles = ["harvested_at", "plant_name", "userplant_name", "garden_name", "quantity", "pound", "ounce", "notes"]
     #TODO add metadata field
 
     q_string = """
     SELECT
     h.harvested_at,
     p.name,
+    up.name,
     ug.name,
     h.quantity,
     h.pound,
     h.ounce,
     h.notes
     from harvests as h
-    INNER JOIN plants as p ON h.plant_id = p.rowid
-    INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
+    LEFT JOIN user_plants as up ON h.userplant_id = up.rowid
+    LEFT JOIN plants as p ON h.plant_id = p.rowid
+    LEFT JOIN user_gardens as ug ON h.garden_id = ug.rowid
     WHERE h.user_id = ? ORDER BY h.rowid DESC"""
     query_harvests = adb.cur.execute(q_string, (user_id,)).fetchall()
-
-    # maybe here do another sql command and loop through data to add a user plant??
-    # INNER JOIN user_plants as up ON h.userplant_id = up.rowid
-    # up.name,
-    
+   
     serialized["harvests"] = [{harvests_titles[i] : harvests[i] for i in range(len(harvests_titles))} for harvests in query_harvests]
     return jsonify(serialized)
 
@@ -421,6 +420,7 @@ def api_export_user_harvests(export_type):
     harvest_data_dump = adb.cur.execute("""SELECT
     h.rowid,
     h.harvested_at,
+    up.name,
     p.name,
     ug.name,
     h.quantity,
@@ -429,38 +429,27 @@ def api_export_user_harvests(export_type):
     h.notes,
     h.metadata
     from harvests as h
-    INNER JOIN plants as p ON h.plant_id = p.rowid
-    INNER JOIN user_gardens as ug ON h.garden_id = ug.rowid
+    LEFT JOIN user_plants as up ON h.userplant_id = up.rowid
+    LEFT JOIN plants as p ON h.plant_id = p.rowid
+    LEFT JOIN user_gardens as ug ON h.garden_id = ug.rowid
     WHERE h.user_id = ? ORDER BY h.rowid DESC""",(user_id,)).fetchall()
-    #todo dump userplant data and garden data
-    userpant_harvest_data = adb.cur.execute("""
-    SELECT
-    up.name
-    FROM harvests as h
-    INNER JOIN user_plants as up on h.userplant_id =up.rowid
-    WHERE h.user_id=? ORDER BY h.rowid DESC
-    """,(user_id,)).fetchall()
+    harvest_titles = ["Harvest Id", "Havest Date", "Userplant Name",
+                      "Plant Name", "Garden Name", "Quantity", "Pound",
+                      "Ounce", "Notes", "Metadata"]
     if export_type == "csv":
-        total_list = []
-        if len(userpant_harvest_data) == len(harvest_data_dump):
-            for i in range(len(harvest_data_dump)):
-                total_list.append(userpant_harvest_data[i]+harvest_data_dump[i])
-        print(total_list)
+        
         with open("/tmp/export.csv", "w") as cf:
             csvfile = csv.writer(cf)
-            [csvfile.writerow(line) for line in total_list]
+            csvfile.writerow(harvest_titles)
+            [csvfile.writerow(line) for line in harvest_data_dump]
         return send_file("/tmp/export.csv", mimetype='text/csv',download_name="exported_harvests.csv", as_attachment=True)
     elif export_type == "xlsx":
         wb = Workbook()
         ws = wb.active
-        total_list = []
-        if len(userpant_harvest_data) == len(harvest_data_dump):
-            for i in range(len(harvest_data_dump)):
-                total_list.append(userpant_harvest_data[i]+harvest_data_dump[i])
-
-        for row in range(len(total_list)):
-            for col in range(len(total_list[row])):
-                _ = ws.cell(column=col+1, row=row+1, value=total_list[row][col])
+        # TODO add titles
+        for row in range(len(harvest_data_dump)):
+            for col in range(len(harvest_data_dump[row])):
+                _ = ws.cell(column=col+1, row=row+1, value=harvest_data_dump[row][col])
         wb.save("/tmp/export.xlsx")
         return send_file("/tmp/export.xlsx",
                          mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
