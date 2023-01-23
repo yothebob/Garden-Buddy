@@ -90,12 +90,18 @@ const linksList = [
       icon: 'chat',
       link: '/export/'
   },
-]
+  {
+      title: 'Logout',
+      caption: '',
+      icon: 'chat',
+      link: '/api/logout/'
+  },
+ ]
 
-export default defineComponent({
-  name: 'App',
+ export default defineComponent({
+     name: 'App',
 
-  components: {
+     components: {
     EssentialLink
   },
 
