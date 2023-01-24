@@ -308,31 +308,25 @@ need to be logged in (and eventually jwt)
 #+END_SRC 
 
 * TODO plans
+*** Features
+**** TODO Add photo upload support 
+**** TODO Add generic pages for individial item in a table, the page will display the items info like description. picture and etc
+**** TODO Add new tables "Ammend", "Ammendments" where you can track when you ammend and with what, and you can make custom ammendments and write note about how you made etc..
+**** TODO Add "Todo" page where you can create columns and add info to them (think like a simple trello board), add links for things you want to buy, date for planting etc.
+**** TODO on "Todo" page add a checker and notifications to let you know if you need to do something on your "Todo" list
 *** TODO Backend
-**** DONE fix possible account security, login/ create, limit api calls
-**** DONE fix sql injection
 **** TODO need to add jwt,
 **** TODO user_token
 **** TODO user_garden metadata
-**** DONE plant foot_size
-**** DONE variety foot_size
 **** TODO add list metadata for plants("icon": "star", "label": "high Yeilder")
 **** TODO add favorites?
-**** DONE add csv data dump
 **** TODO mathplotlib graph generation
-**** TODO update homepage query to try to get userplant_id if possible
-**** DONE add/fix edit calls
 **** TODO add delete userplant/garden functionality
 *** TODO Front end
-**** TODO fix quasar navbar (global)
 **** TODO add garden sq creator/editor
-**** DONE switch layouts to pages
-**** TODO move api calls into one spot api.js
 **** TODO add graph visualation tools
 **** TODO add more data to home page, lbs totals, grand yeild etc
 **** TODO add/list on harvest page
-**** TODO icons for navbar
 **** TODO update successful create/updates to reoute to home page
-**** DONE fix update and create on garden page 
 **** TODO add delete userplant/garden functionality
 
