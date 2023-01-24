@@ -189,7 +189,6 @@ need to be logged in (and eventually jwt)
     ]
 }
 #+END_SRC 
-
 *** /api/plant/new:
 #+BEGIN_SRC javascript
   {
@@ -197,6 +196,27 @@ need to be logged in (and eventually jwt)
     "description": "immature beans, in bush and pole variety.", 
     "info_url": "www.google.com",
     "foot_size": "1",
+  }
+#+END_SRC
+*** /api/amend/new:
+#+BEGIN_SRC javascript
+  {
+    "name": "Worm Castings",
+    "description": "worm castings made from my worms.", 
+    "info_url": "www.google.com",
+  }
+#+END_SRC 
+*** /api/amendment/new:
+#+BEGIN_SRC javascript
+  {
+    "user_id": "1",
+    "amend_id": "1",
+    "garden_id": "1",
+    "amended_at": "01/22/2023",
+    "quantity": "0",
+    "pound": "5",
+    "ounce": "6",
+    "notes": "Amended roughly 5.5 lbs of worm castings to garden."
   }
 #+END_SRC 
 *** /api/variety/new:

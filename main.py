@@ -192,6 +192,26 @@ def api_new_plant():
         adb.con.commit()
     return jsonify({"status": 200, "message": "Saved Plant Successfully!"})
 
+@app.route("/api/amend/new", methods=["POST"])
+def api_new_amend():
+    return_json = {}
+    decoded_json = json.loads(request.get_data().decode("UTF-8"))
+    if True:
+        adb.cur.execute(f"INSERT into amends (name, description, info_url) VALUES (?,?,?)",(decoded_json['name'],decoded_json['description'],decoded_json['info_url']))
+
+        adb.con.commit()
+    return jsonify({"status": 200, "message": "Saved Amend Successfully!"})
+
+@app.route("/api/amendment/new", methods=["POST"])
+def api_new_amendment():
+    return_json = {}
+    decoded_json = json.loads(request.get_data().decode("UTF-8"))
+    if True:
+        adb.cur.execute(f"INSERT into amendments (user_id, amend_id, garden_id, amended_at, quantity, pound, ounce, notes) VALUES (?,?,?)",(decoded_json['user_id'],decoded_json['amend_id'],decoded_json['garden_id'],decoded_json['amended_at'],decoded_json['quantity'],decoded_json['pound'],decoded_json['ounce'],decoded_json['notes']))
+
+        adb.con.commit()
+    return jsonify({"status": 200, "message": "Saved Amendment Successfully!"})
+
 
 @app.route("/api/variety/new", methods=["POST"])
 def api_new_variety():
