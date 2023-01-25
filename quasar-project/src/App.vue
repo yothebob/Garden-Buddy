@@ -67,6 +67,18 @@ const linksList = [
       link: '/plant/new/'
   },
   {
+      title: 'Amends',
+      caption: 'Track fertilizers that you use in the garden!',
+      icon: 'code',
+      link: '/amend/new/'
+  },
+  {
+      title: 'Amendments',
+      caption: 'Track your Fertilizer routine in the garden!',
+      icon: 'code',
+      link: '/amendment/new/'
+  },
+  {
       title: 'Varieties',
       caption: 'Check out new Varieties for your garden, Or add your own!',
       icon: 'code',

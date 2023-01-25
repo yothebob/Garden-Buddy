@@ -51,6 +51,18 @@ const routes = [
     ]
   },
   {
+    path: '/amend/new/',
+    children: [
+      { path: '', component: () => import('pages/NewAmendPage.vue') }
+    ]
+  },
+  {
+    path: '/amendment/new/',
+    children: [
+      { path: '', component: () => import('pages/NewAmendmentPage.vue') }
+    ]
+  },
+  {
     path: '/variety/new/',
     children: [
       { path: '', component: () => import('pages/NewVarietyPage.vue') }

@@ -271,6 +271,19 @@ def api_update_plant():
     return jsonify({"status": 200, "message": "Saved Plant Successfully!"})
 
 
+@app.route("/api/amend/update", methods=["POST"])
+def api_update_amend():
+    return_json = {}
+    decoded_json = json.loads(request.get_data().decode("UTF-8"))
+    try:
+        adb.cur.execute(f"UPDATE amends SET name = ?, description = ?, info_url = ? WHERE rowid = ?", (decoded_json['name'],decoded_json['description'], decoded_json['info_url'], decoded_json['amend_id']))
+        adb.con.commit()
+
+    except:
+        return jsonify({"status": 500, "message": "Uh oh! Something went wrong"})
+    return jsonify({"status": 200, "message": "Saved Amend Successfully!"})
+
+
 @app.route("/api/variety/update", methods=["POST"])
 def api_update_variety():
     return_json = {}
@@ -387,6 +400,25 @@ def api_plant_serializer():
     query_plants = adb.cur.execute("SELECT rowid, name, description, info_url from plants").fetchall()
 
     serialized["plants"] = [{plant_titles[i] : plant[i] for i in range(len(plant_titles))} for plant in query_plants]
+    return jsonify(serialized)
+
+@app.route("/api/amends/", methods=["GET"])
+def api_amend_serializer():
+    serialized = {}
+    amend_titles = ["value", "label", "description", "info_url"]
+    query_amends = adb.cur.execute("SELECT rowid, name, description, info_url from amends").fetchall()
+
+    serialized["amends"] = [{amend_titles[i] : amend[i] for i in range(len(amend_titles))} for amend in query_amends]
+    return jsonify(serialized)
+
+@app.route("/api/amendments/", methods=["GET"])
+def api_amend_serializer():
+    serialized = {}
+    # i will have to make a sql command more like harvest :( do later
+    amend_titles = ["user_id", "amend_id", "garden_id", "amended_at", "quantity", "pound", "ounce", "notes"]
+    query_amends = adb.cur.execute("SELECT rowid, user_id, amend_id, garden_id, amended_at, quantity, pound, ounce, notes from amendments").fetchall()
+
+    serialized["amendments"] = [{amend_titles[i] : amend[i] for i in range(len(amend_titles))} for amend in query_amends]
     return jsonify(serialized)
 
 
