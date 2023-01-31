@@ -15,7 +15,7 @@
 			<q-item>
 			       <q-item-section>
 				   <q-item-label>{{am.label}}</q-item-label>
-				   <q-item-label caption lines="2">{{am.description}}</q-item-label>
+				   <q-item-label caption lines="2">{{am.notes}}</q-item-label>
 			       </q-item-section>
 			</q-item>
 
@@ -25,21 +25,30 @@
 	    </div>
 	    <div v-else-if="amendmentTrack == 'new'">
 		<h3>Add New Amendment</h3><br/>
-		
-		<q-input rounded outlined v-model="_amendmentName" label="Name" />
+
+		<q-select rounded outlined :options="_amends" v-model="_amendId" label="Which Ammendment?" />
 		<br/>
 		
+		<q-select rounded outlined :options="_gardens" v-model="_GardenId" label="Which Garden?" />
+		<br/>
+		
+		<q-input rounded outlined v-model="quantity" label="Quantity" />
+		<br/>
+		
+		<q-input rounded outlined v-model="pound" label="Pound" />
+		<br/>
+		
+		<q-input rounded outlined v-model="ounce" label="Ounce" />
+		<br/>
+
 		<q-input
-		    v-model="_amendmentDescription"
+		    v-model="notes"
 			     filled
 		    autogrow
-		    label="Description"
+		    label="Notes"
 		/>
 		<br/>
 		
-		<q-input rounded outlined v-model="_amendmentInfoUrl" label="Amendment Info Url" />
-		<br/>
-
 		<q-btn @click="sendNewAmendment" color="white" text-color="black" label="Add Amendment" />
 		
 	    </div>
@@ -86,14 +95,28 @@
 	     _amendmentName: null,
 	     _amendmentId: null,
 	     _amendmentDescription: null,
-	     _amendmentInfoUrl: null
+	     _amendmentInfoUrl: null,
+	     _amendmentUserId: null,
+	     _amendId: null,
+	     _gardens: null,
+	     _amends: null,
+	     _GardenId: null,
+	     amended_at: null,
+	     quantity: null,
+	     pound: null,
+	     ounce: null,
+	     _amendmentName: null,
+	     _userData: null,
+	     notes: null, 
 	 };
      },
 
      created() {
+	 this.apiGetUserData();
 	 this.apiCheckLogin();
 	 this.amendmentTrack = "list";
 	 this.apiGetAmendmentData();
+	 this.apiGetAmendsData();
      },
      
      methods: {
@@ -118,9 +141,15 @@
 	 },
 	 sendNewAmendment: function () {
 	     let _newAmendmentdata = {
+		 "user_id": this._userData.user_id,
+		 "amend_id": this._amendId.value,
+		 "garden_id": this._GardenId.value,
+		 "amended_at": "2022",
+		 "quantity": this.quantity,
+		 "pound": this.pound,
+		 "ounce": this.ounce,
 		 "name": this._amendmentName,
-		 "description": this._amendmentDescription, 
-		 "info_url": this._amendmentInfoUrl,
+		 "notes": this.notes, 
 	     };
 	     
 	     axios.post(`/api/amendment/new`, _newAmendmentdata).then((response) => {
@@ -143,6 +172,16 @@
 	     axios.get("/api/amendments/").then((response) => {
 		 if (response.status == 200) {
 		     this._amendments = response.data.amendments
+		 }
+		 console.log(response);
+	     }).catch(function (error) {
+		 console.log(error.toJSON());
+	     });
+	 },
+	 apiGetAmendsData: function () {
+	     axios.get("/api/amends/").then((response) => {
+		 if (response.status == 200) {
+		     this._amends = response.data.amends
 		 }
 		 console.log(response);
 	     }).catch(function (error) {

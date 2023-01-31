@@ -207,7 +207,7 @@ def api_new_amendment():
     return_json = {}
     decoded_json = json.loads(request.get_data().decode("UTF-8"))
     if True:
-        adb.cur.execute(f"INSERT into amendments (user_id, amend_id, garden_id, amended_at, quantity, pound, ounce, notes) VALUES (?,?,?)",(decoded_json['user_id'],decoded_json['amend_id'],decoded_json['garden_id'],decoded_json['amended_at'],decoded_json['quantity'],decoded_json['pound'],decoded_json['ounce'],decoded_json['notes']))
+        adb.cur.execute(f"INSERT into amendments (user_id, amend_id, garden_id, amended_at, quantity, pound, ounce, notes) VALUES (?,?,?,?,?,?,?,?)",(decoded_json['user_id'],decoded_json['amend_id'],decoded_json['garden_id'],decoded_json['amended_at'],decoded_json['quantity'],decoded_json['pound'],decoded_json['ounce'],decoded_json['notes']))
 
         adb.con.commit()
     return jsonify({"status": 200, "message": "Saved Amendment Successfully!"})
@@ -412,12 +412,11 @@ def api_amend_serializer():
     return jsonify(serialized)
 
 @app.route("/api/amendments/", methods=["GET"])
-def api_amend_serializer():
+def api_amendments_serializer():
     serialized = {}
     # i will have to make a sql command more like harvest :( do later
     amend_titles = ["user_id", "amend_id", "garden_id", "amended_at", "quantity", "pound", "ounce", "notes"]
     query_amends = adb.cur.execute("SELECT rowid, user_id, amend_id, garden_id, amended_at, quantity, pound, ounce, notes from amendments").fetchall()
-
     serialized["amendments"] = [{amend_titles[i] : amend[i] for i in range(len(amend_titles))} for amend in query_amends]
     return jsonify(serialized)
 
