@@ -13,9 +13,9 @@
 		<h3>Plants</h3><br/>
 		<div v-for="pp in _plants" class="q-pa-md">
 		    <q-list dense bordered padding class="rounded-borders">
-			<q-item>
+			<q-item >
 			       <q-item-section>
-				   <q-item-label>{{pp.label}}</q-item-label>
+				   <q-item-label @click="goToPlantPage(pp.value)">{{pp.label}}</q-item-label>
 				   <q-item-label caption lines="2">{{pp.description}}</q-item-label>
 			       </q-item-section>
 			       
@@ -130,6 +130,9 @@
      },
      
      methods: {
+	 goToPlantPage: function (pid) {
+	     window.location = `/plant/${pid}/`
+	 },
 	 apiCheckLogin: function () {
 	     axios.get("/api/who-am-i/").then((response) => {
 		 console.log(response)

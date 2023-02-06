@@ -380,6 +380,15 @@ def api_harvest_serializer():
     serialized["harvests"] = [{harvests_titles[i] : harvests[i] for i in range(len(harvests_titles))} for harvests in query_harvests]
     return jsonify(serialized)
 
+@app.route("/api/plants/<pid>", methods=["GET"])
+def api_plant_serializer_by_id(pid):
+    serialized = {}
+    plant_titles = ["value", "label", "description", "info_url"]
+    query_plant = adb.cur.execute("SELECT rowid, name, description, info_url from plants where rowid=?", pid).fetchone()
+    print(query_plant)
+    serialized["plant"] = {plant_titles[i] : query_plant[i] for i in range(len(plant_titles))}
+    return jsonify(serialized)
+
 @app.route("/api/plants/", methods=["GET"])
 def api_plant_serializer():
     serialized = {}
